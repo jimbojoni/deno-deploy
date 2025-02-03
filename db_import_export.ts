@@ -17,7 +17,8 @@ export async function importSupabaseData() {
   }
 
   for (const row of data) {
-    await kv.set(["your_table", row.id], row);
+    // Store as JSON string since Deno KV doesn't support objects directly
+    await kv.set(["your_table", row.id], JSON.stringify(row));
   }
 
   console.log("✅ Data imported to Deno KV successfully!");
