@@ -18,7 +18,7 @@ export async function importSupabaseData() {
 
   for (const row of data) {
     // Store as JSON string since Deno KV doesn't support objects directly
-    await kv.set(["penduduk", row.id], JSON.stringify(row));
+    await kv.set(["penduduk", row.nik], JSON.stringify(row));
   }
 
   console.log("✅ Data imported to Deno KV successfully!");
