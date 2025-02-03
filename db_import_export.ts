@@ -9,6 +9,7 @@ const kv = await Deno.openKv();
 
 // Function to fetch and import data from Supabase to Deno KV
 export async function importSupabaseData() {
+  console.log("🚀 Fetching data from Supabase...");
   const { data, error } = await supabase.from("penduduk").select("*");
 
   if (error) {
@@ -16,10 +17,13 @@ export async function importSupabaseData() {
     return;
   }
 
+  console.log(`✅ Fetched ${data.length} records from Supabase.`);
+
+  const batch = kv.atomic();
   for (const row of data) {
-    // Store as JSON string since Deno KV doesn't support objects directly
-    await kv.set(["penduduk", row.nik], JSON.stringify(row));
+    batch.set(["penduduk", row.nik], JSON.stringify(row));
   }
 
+  await batch.commit();
   console.log("✅ Data imported to Deno KV successfully!");
 }
