@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+kimport { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -18,7 +18,7 @@ export async function importSupabaseData() {
 
   for (const row of data) {
     // Store as JSON string since Deno KV doesn't support objects directly
-    await kv.set(["your_table", row.id], JSON.stringify(row));
+    await kv.set(["penduduk", row.id], JSON.stringify(row));
   }
 
   console.log("✅ Data imported to Deno KV successfully!");
