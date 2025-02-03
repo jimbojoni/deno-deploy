@@ -1,0 +1,22 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase to Deno KV</title>
+</head>
+<body>
+  <h1>Import Supabase Data to Deno KV</h1>
+  <button onclick="importData()">Import Data</button>
+  <p id="status"></p>
+
+  <script>
+    async function importData() {
+      document.getElementById("status").innerText = "Importing...";
+      const response = await fetch("/db", { method: "POST" });
+      const result = await response.text();
+      document.getElementById("status").innerText = result;
+    }
+  </script>
+</body>
+</html>	
