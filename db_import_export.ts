@@ -1,11 +1,11 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { kv } from "https://deno.land/x/kv/mod.ts"; // Deno KV
 
-// Supabase credentials from environment variables
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Initialize Deno KV
+const kv = await Deno.openKv();
 
 // Function to fetch and import data from Supabase to Deno KV
 export async function importSupabaseData() {
