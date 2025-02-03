@@ -9,7 +9,7 @@ const kv = await Deno.openKv();
 
 // Function to fetch and import data from Supabase to Deno KV
 export async function importSupabaseData() {
-  const { data, error } = await supabase.from("your_table").select("*");
+  const { data, error } = await supabase.from("penduduk").select("*");
 
   if (error) {
     console.error("❌ Error fetching data from Supabase:", error.message);
