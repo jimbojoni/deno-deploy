@@ -49,8 +49,8 @@
 		}
 	
     function updateStatus(message) {
-      document.getElementById("status").innerText = message;
-    }
+			document.getElementById("status").innerHTML = message; // Allow HTML (for link)
+		}
   </script>
 </body>
 </html>
