@@ -27,11 +27,12 @@ serve(async (req) => {
   }
 	
 	if (req.method === "GET" && url.pathname === "/db/backup-drive") {
-		const fileId = await backupDenoKvToDrive();
+		const {fileId, folderId} = await backupDenoKvToDrive();
 
 		if (fileId) {
 			const fileLink = `https://drive.google.com/file/d/${fileId}/view`;
-			return new Response(`✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>`, {
+			const folderLink = `https://drive.google.com/drive/folders/${folderId}`;
+			return new Response(`✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">View File</a>`, {
 				status: 200,
 				headers: { "Content-Type": "text/html" },
 			});

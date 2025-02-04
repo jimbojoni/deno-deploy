@@ -112,7 +112,7 @@ export async function backupDenoKvToDrive() {
     if (uploadResponse.data.id) {
       const fileId = uploadResponse.data.id;
       console.log(`✅ Backup uploaded successfully! File ID: ${fileId}`);
-      return fileId; // Return the file ID
+      return {fileId: fileId, folderId: folderId}; // Return the file ID
     } else {
       console.error("❌ Error: Backup upload failed.");
       return null; // Return null if upload failed
