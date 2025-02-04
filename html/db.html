@@ -11,6 +11,7 @@
   <button onclick="importData()">Import Data</button>
   <button onclick="clearDatabase()">Clear Database</button>
   <button onclick="getDatabaseSize()">Get Database Size</button>
+	<button onclick="backupToDrive()">Backup to Google Drive</button>
 
   <p id="status"></p>
 
@@ -38,6 +39,14 @@
         .then(result => updateStatus(result))
         .catch(error => updateStatus("❌ Failed to get database size!"));
     }
+		
+		async function backupToDrive() {
+			updateStatus("Uploading backup...");
+			fetch("/db/backup-drive", { method: "GET" })
+				.then(response => response.text())
+				.then(result => updateStatus(result))
+				.catch(error => updateStatus("❌ Backup failed!"));
+		}
 	
     function updateStatus(message) {
       document.getElementById("status").innerText = message;
