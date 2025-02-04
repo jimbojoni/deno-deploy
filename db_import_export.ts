@@ -31,19 +31,12 @@ export async function clearDenoKv() {
 export async function getDatabaseSize() {
   const kv = await Deno.openKv();
   let count = 0;
-  const batchSize = 1000; // Adjust batch size as needed
-  let entries = kv.list({ prefix: ["penduduk"] });
 
-  let batch = [];
-  for await (const entry of entries) {
-    batch.push(entry);
-    if (batch.length >= batchSize) {
-      count += batch.length;
-      batch = []; // Reset batch
-    }
+  // Iterate directly and count without storing in an array
+  for await (const _entry of kv.list({ prefix: ["penduduk"] })) {
+    count++;
   }
 
-  count += batch.length; // Add remaining records
   console.log(`📊 Total records in Deno KV: ${count}`);
   return count;
 }
