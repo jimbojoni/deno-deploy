@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,25 +6,51 @@
   <title>Supabase to Deno KV</title>
 </head>
 <body>
-  <h1>Import Supabase Data to Deno KV</h1>
+  <h1>Supabase Data Management</h1>
+  
   <button onclick="importData()">Import Data</button>
+  <button onclick="clearDatabase()">Clear Database</button>
+  <button onclick="getDatabaseSize()">Get Database Size</button>
+
   <p id="status"></p>
 
   <script>
     async function importData() {
-      const statusEl = document.getElementById("status");
-      statusEl.innerText = "Importing...";
-  
-      fetch("/db", { method: "POST" })
-        .then((response) => response.text())
-        .then((result) => {
-          statusEl.innerText = result;
-        })
-        .catch((error) => {
-          statusEl.innerText = "❌ Import failed!";
+      updateStatus("Importing...");
+      fetch("/db/import", { method: "POST" })
+        .then(response => response.text())
+        .then(result => updateStatus(result))
+        .catch(error => {
+          updateStatus("❌ Import failed!");
           console.error(error);
         });
     }
+
+    async function clearDatabase() {
+      updateStatus("Clearing database...");
+      fetch("/db/clear", { method: "POST" })
+        .then(response => response.text())
+        .then(result => updateStatus(result))
+        .catch(error => {
+          updateStatus("❌ Clear failed!");
+          console.error(error);
+        });
+    }
+
+    async function getDatabaseSize() {
+      updateStatus("Getting database size...");
+      fetch("/db/size", { method: "GET" })
+        .then(response => response.text())
+        .then(result => updateStatus(result))
+        .catch(error => {
+          updateStatus("❌ Failed to get database size!");
+          console.error(error);
+        });
+    }
+
+    function updateStatus(message) {
+      document.getElementById("status").innerText = message;
+    }
   </script>
 </body>
-</html>	
+</html>
