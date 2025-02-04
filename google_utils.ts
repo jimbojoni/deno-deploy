@@ -1,5 +1,4 @@
 import { google } from "https://esm.sh/googleapis@122.0.0";
-import { Readable } from "node:stream"; // Import Node.js Readable stream
 
 export async function googleAuth() {
   const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
@@ -83,7 +82,7 @@ export async function backupDenoKvToDrive() {
 
     console.log("📦 Preparing backup...");
 
-    // Store backup data in memory as a string
+    // Store backup data in memory
     let backupData = "[\n";
     let first = true;
 
@@ -94,14 +93,13 @@ export async function backupDenoKvToDrive() {
     }
     backupData += "\n]";
 
-    // Convert to Buffer
-    const backupBuffer = new TextEncoder().encode(backupData);
-
-    // Convert Buffer to Readable Stream
-    const backupStream = Readable.from(backupBuffer);
+-    // Convert string to readable stream
+-    const backupStream = ReadableStream.from([backupData]);
++    // Convert string to Uint8Array
++    const backupBytes = new TextEncoder().encode(backupData);
 
     console.log("📤 Uploading backup to Google Drive...");
-
+    
     // Upload backup directly to Google Drive
     const uploadResponse = await drive.files.create({
       requestBody: {
@@ -111,7 +109,8 @@ export async function backupDenoKvToDrive() {
       },
       media: {
         mimeType: "application/json",
-        body: backupStream, // Use Node.js Readable Stream
+-        body: backupStream,
++        body: backupBytes,
       },
     });
 
