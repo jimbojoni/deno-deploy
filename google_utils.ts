@@ -86,28 +86,39 @@ export async function backupDenoKvToDrive() {
     console.log("📦 Preparing backup...");
 
     // Fetch only one record from Deno KV
-    let backupData = "[\n";
+    let backupData = "";
     let found = false;
 
     for await (const entry of kv.list({ prefix: ["penduduk"] })) {
       const data = JSON.stringify({ key: entry.key, value: entry.value }, null, 2);
       console.log("📝 Record to backup:", data); // Log the record
 
-      backupData += data + "\n]";
+      backupData = "[\n" + data + "\n]";
       found = true;
       break; // Stop after the first record
     }
 
     if (!found) {
-      console.warn("⚠️ No records found in Deno KV.");
+      console.warn("⚠️ No records found in Deno KV. Skipping backup.");
       return;
     }
 
-    console.log("📤 Uploading backup to Google Drive...");
+    console.log("📤 Preparing stream for upload...");
 
-    // Convert backupData to Uint8Array
-    const encoder = new TextEncoder();
-    const backupBytes = encoder.encode(backupData);
+    // Convert string to ReadableStream
+    const backupStream = new ReadableStream({
+      start(controller) {
+        if (backupData.length === 0) {
+          console.warn("⚠️ Stream is empty. Skipping upload.");
+          controller.close();
+          return;
+        }
+        controller.enqueue(new TextEncoder().encode(backupData));
+        controller.close();
+      },
+    });
+
+    console.log("✅ Stream is ready, proceeding with upload...");
 
     // Upload backup directly to Google Drive
     const uploadResponse = await drive.files.create({
@@ -118,7 +129,7 @@ export async function backupDenoKvToDrive() {
       },
       media: {
         mimeType: "application/json",
-        body: backupBytes, // Directly use Uint8Array (Google Drive API supports it)
+        body: backupStream,
       },
     });
 
