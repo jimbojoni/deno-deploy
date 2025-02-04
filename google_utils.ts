@@ -119,7 +119,8 @@ export async function backupDenoKvToDrive() {
       },
       media: {
         mimeType: "application/json",
-        body: backupBlob.stream(), // Use Blob stream
+        //body: backupBlob.stream(), // Use Blob stream
+				body: backupData,
       },
     });
 
