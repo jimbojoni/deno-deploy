@@ -11,6 +11,12 @@
   <button onclick="importData()">Import Data</button>
   <button onclick="clearDatabase()">Clear Database</button>
   <button onclick="getDatabaseSize()">Get Database Size</button>
+  <button onclick="backupDatabase()">Download Backup</button>
+
+  <form id="restoreForm">
+    <input type="file" id="backupFile" accept=".json" required>
+    <button type="submit">Restore Backup</button>
+  </form>
 
   <p id="status"></p>
 
@@ -20,10 +26,7 @@
       fetch("/db/import", { method: "POST" })
         .then(response => response.text())
         .then(result => updateStatus(result))
-        .catch(error => {
-          updateStatus("❌ Import failed!");
-          console.error(error);
-        });
+        .catch(error => updateStatus("❌ Import failed!"));
     }
 
     async function clearDatabase() {
@@ -31,10 +34,7 @@
       fetch("/db/clear", { method: "POST" })
         .then(response => response.text())
         .then(result => updateStatus(result))
-        .catch(error => {
-          updateStatus("❌ Clear failed!");
-          console.error(error);
-        });
+        .catch(error => updateStatus("❌ Clear failed!"));
     }
 
     async function getDatabaseSize() {
@@ -42,11 +42,45 @@
       fetch("/db/size", { method: "GET" })
         .then(response => response.text())
         .then(result => updateStatus(result))
-        .catch(error => {
-          updateStatus("❌ Failed to get database size!");
-          console.error(error);
-        });
+        .catch(error => updateStatus("❌ Failed to get database size!"));
     }
+
+    async function backupDatabase() {
+      updateStatus("Creating backup...");
+      fetch("/db/backup", { method: "GET" })
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "backup.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          updateStatus("✅ Backup downloaded!");
+        })
+        .catch(error => updateStatus("❌ Backup failed!"));
+    }
+
+    document.getElementById("restoreForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      updateStatus("Restoring backup...");
+
+      const fileInput = document.getElementById("backupFile");
+      const file = fileInput.files[0];
+      if (!file) {
+        updateStatus("❌ No file selected!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("backup", file);
+
+      fetch("/db/restore", { method: "POST", body: formData })
+        .then(response => response.text())
+        .then(result => updateStatus(result))
+        .catch(error => updateStatus("❌ Restore failed!"));
+    });
 
     function updateStatus(message) {
       document.getElementById("status").innerText = message;
