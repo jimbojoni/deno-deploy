@@ -14,12 +14,12 @@ export async function googleAuth(){
 
 	// Authenticate with Google
 	const auth = new google.auth.GoogleAuth({
-	credentials: credentialsJson,
-	scopes: [
-		"https://www.googleapis.com/auth/documents.readonly", // Google Docs API
-		"https://www.googleapis.com/auth/drive.metadata.readonly", // Google Drive API
-		"https://www.googleapis.com/auth/spreadsheets.readonly", // Google Sheets API
-	],
+		credentials: credentialsJson,
+		scopes: [
+			"https://www.googleapis.com/auth/documents", // Full access to Google Docs
+			"https://www.googleapis.com/auth/drive.file", // Read & write access to Drive files you create
+			"https://www.googleapis.com/auth/spreadsheets", // Full access to Google Sheets
+		],
 	});
 	return auth;
 }
