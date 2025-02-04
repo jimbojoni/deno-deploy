@@ -90,27 +90,12 @@ export async function backupDenoKvToDrive() {
     let found = false;
 
     for await (const entry of kv.list({ prefix: ["penduduk"] })) {
-      const data = JSON.stringify({ key: entry.key, value: entry.value }, null, 2);
-      console.log("📝 Record to backup:", data); // Log the record
-
-      backupData = "[\n" + data + "\n]";
-      found = true;
-      break; // Stop after the first record
+      const data = JSON.stringify({ key: entry.key, value: entry.value });
+      backupData += first ? data : ",\n" + data;
+      first = false;
     }
+    backupData += "\n]";
 
-    if (!found) {
-      console.warn("⚠️ No records found in Deno KV. Skipping backup.");
-      return;
-    }
-
-    console.log("📤 Creating Blob for upload...");
-
-    // Convert the backup data into a Blob (works in Deno Deploy)
-    const backupBlob = new Blob([backupData], { type: "application/json" });
-
-    console.log("✅ Blob created, proceeding with upload...");
-
-    // Upload backup directly to Google Drive
     const uploadResponse = await drive.files.create({
       requestBody: {
         name: `backup-${new Date().toISOString()}.json`,
