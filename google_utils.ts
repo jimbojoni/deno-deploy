@@ -103,22 +103,12 @@ export async function backupDenoKvToDrive() {
       return;
     }
 
-    console.log("📤 Preparing stream for upload...");
+    console.log("📤 Creating Blob for upload...");
 
-    // Convert string to ReadableStream
-    const backupStream = new ReadableStream({
-      start(controller) {
-        if (backupData.length === 0) {
-          console.warn("⚠️ Stream is empty. Skipping upload.");
-          controller.close();
-          return;
-        }
-        controller.enqueue(new TextEncoder().encode(backupData));
-        controller.close();
-      },
-    });
+    // Convert the backup data into a Blob (works in Deno Deploy)
+    const backupBlob = new Blob([backupData], { type: "application/json" });
 
-    console.log("✅ Stream is ready, proceeding with upload...");
+    console.log("✅ Blob created, proceeding with upload...");
 
     // Upload backup directly to Google Drive
     const uploadResponse = await drive.files.create({
@@ -129,7 +119,7 @@ export async function backupDenoKvToDrive() {
       },
       media: {
         mimeType: "application/json",
-        body: backupStream,
+        body: backupBlob.stream(), // Use Blob stream
       },
     });
 
