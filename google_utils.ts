@@ -1,6 +1,6 @@
 import { google } from "https://esm.sh/googleapis@122.0.0";
 //import { Readable } from "node:stream"; // Use this if running in Node.js
-import { Readable } from "https://deno.land/std@0.224.0/node/stream.ts"; // Use this if running in Deno
+//import { Readable } from "https://deno.land/std@0.224.0/node/stream.ts"; // Use this if running in Deno
 
 
 export async function googleAuth() {
@@ -98,8 +98,8 @@ export async function backupDenoKvToDrive() {
 
     console.log("📤 Uploading backup to Google Drive...");
 
-    // Create a Node.js Readable stream from the string
-    const backupStream = Readable.from(backupData);
+    // Convert string to a Blob (Deno Deploy compatible)
+    const backupBlob = new Blob([backupData], { type: "application/json" });
 
     // Upload backup directly to Google Drive
     const uploadResponse = await drive.files.create({
@@ -110,7 +110,7 @@ export async function backupDenoKvToDrive() {
       },
       media: {
         mimeType: "application/json",
-        body: backupStream, // Use Readable stream instead
+        body: backupBlob.stream(), // Use Blob stream for Deno Deploy
       },
     });
 
