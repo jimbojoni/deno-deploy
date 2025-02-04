@@ -94,7 +94,7 @@ export async function backupDenoKvToDrive() {
     backupData += "\n]";
 
     // Convert string to readable stream
-    const backupStream = new Blob([backupData], { type: "application/json" }).stream();
+    const backupStream = ReadableStream.from([backupData]);
 
     console.log("📤 Uploading backup to Google Drive...");
     
