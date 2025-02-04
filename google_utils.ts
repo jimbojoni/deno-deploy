@@ -66,37 +66,31 @@ export async function backupDenoKvToDrive() {
   const kv = await Deno.openKv();
   const { drive } = await googleAuth();
   const folderId = await getOrCreateBackupFolder(drive);
-  const backupFilePath = "backup.json";
 
-  // Create local backup file
-  const backupFile = await Deno.open(backupFilePath, { write: true, create: true, truncate: true });
-  const encoder = new TextEncoder();
-
+  // Store backup data in memory
+  let backupData = "[\n";
   let first = true;
-  await backupFile.write(encoder.encode("[\n"));
 
   for await (const entry of kv.list({ prefix: ["penduduk"] })) {
     const data = JSON.stringify({ key: entry.key, value: entry.value });
-    await backupFile.write(encoder.encode(first ? data : ",\n" + data));
+    backupData += first ? data : ",\n" + data;
     first = false;
   }
+  backupData += "\n]";
 
-  await backupFile.write(encoder.encode("\n]"));
-  backupFile.close();
+  // Convert string to readable stream
+  const backupStream = new Blob([backupData], { type: "application/json" }).stream();
 
-  // Read backup file to upload
-  const fileStream = await Deno.open(backupFilePath, { read: true });
-
-  // Upload to Google Drive in the specific folder
+  // Upload backup directly to Google Drive
   await drive.files.create({
     requestBody: {
       name: `backup-${new Date().toISOString()}.json`,
       mimeType: "application/json",
-      parents: [folderId], // Store in 'My Drive/deno-deploy/backups/'
+      parents: [folderId],
     },
     media: {
       mimeType: "application/json",
-      body: fileStream.readable,
+      body: backupStream,
     },
   });
 
