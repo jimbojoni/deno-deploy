@@ -4,7 +4,7 @@ export async function googleAuth() {
   const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
 
   if (!credentialsBase64) {
-    console.error("Error: GOOGLE_API_CREDENTIALS environment variable is not set.");
+    console.error("❌ Error: GOOGLE_API_CREDENTIALS environment variable is not set.");
     Deno.exit(1);
   }
 
@@ -33,66 +33,90 @@ export async function googleAuth() {
 }
 
 async function getOrCreateBackupFolder(drive: any) {
-  const folderPath = ["deno-deploy", "backups"];
-  let parentId = "root"; // Start from My Drive
+  const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
+  const folderName = "backups";
 
-  for (const folderName of folderPath) {
-    // Check if the folder exists in the current parent
+  try {
+    console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
+    
+    // Check if the folder exists
     const res = await drive.files.list({
       q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents`,
       fields: "files(id)",
     });
 
     if (res.data.files.length > 0) {
-      parentId = res.data.files[0].id; // Use existing folder
-    } else {
-      // Create the folder if it doesn't exist
-      const folder = await drive.files.create({
-        requestBody: {
-          name: folderName,
-          mimeType: "application/vnd.google-apps.folder",
-          parents: [parentId], // Set parent folder
-        },
-        fields: "id",
-      });
-      parentId = folder.data.id;
+      console.log(`✅ Folder already exists: ${folderName} (ID: ${res.data.files[0].id})`);
+      return res.data.files[0].id;
     }
-  }
 
-  return parentId;
+    // Create the "backups" folder inside the given parent ID
+    console.log(`📁 Creating folder: ${folderName}`);
+    const folder = await drive.files.create({
+      requestBody: {
+        name: folderName,
+        mimeType: "application/vnd.google-apps.folder",
+        parents: [parentId], // Set parent folder
+      },
+      fields: "id",
+    });
+
+    console.log(`✅ Folder created: ${folderName} (ID: ${folder.data.id})`);
+    return folder.data.id;
+  } catch (error) {
+    console.error(`❌ Error creating folder: ${error}`);
+    return null;
+  }
 }
 
 export async function backupDenoKvToDrive() {
-  const kv = await Deno.openKv();
-  const { drive } = await googleAuth();
-  const folderId = await getOrCreateBackupFolder(drive);
+  try {
+    const kv = await Deno.openKv();
+    const { drive } = await googleAuth();
+    const folderId = await getOrCreateBackupFolder(drive);
 
-  // Store backup data in memory
-  let backupData = "[\n";
-  let first = true;
+    if (!folderId) {
+      console.error("❌ Error: Could not find or create backup folder.");
+      return;
+    }
 
-  for await (const entry of kv.list({ prefix: ["penduduk"] })) {
-    const data = JSON.stringify({ key: entry.key, value: entry.value });
-    backupData += first ? data : ",\n" + data;
-    first = false;
+    console.log("📦 Preparing backup...");
+
+    // Store backup data in memory
+    let backupData = "[\n";
+    let first = true;
+
+    for await (const entry of kv.list({ prefix: ["penduduk"] })) {
+      const data = JSON.stringify({ key: entry.key, value: entry.value });
+      backupData += first ? data : ",\n" + data;
+      first = false;
+    }
+    backupData += "\n]";
+
+    // Convert string to readable stream
+    const backupStream = new Blob([backupData], { type: "application/json" }).stream();
+
+    console.log("📤 Uploading backup to Google Drive...");
+    
+    // Upload backup directly to Google Drive
+    const uploadResponse = await drive.files.create({
+      requestBody: {
+        name: `backup-${new Date().toISOString()}.json`,
+        mimeType: "application/json",
+        parents: [folderId],
+      },
+      media: {
+        mimeType: "application/json",
+        body: backupStream,
+      },
+    });
+
+    if (uploadResponse.data.id) {
+      console.log(`✅ Backup uploaded successfully! File ID: ${uploadResponse.data.id}`);
+    } else {
+      console.error("❌ Error: Backup upload failed.");
+    }
+  } catch (error) {
+    console.error("❌ Backup process failed:", error);
   }
-  backupData += "\n]";
-
-  // Convert string to readable stream
-  const backupStream = new Blob([backupData], { type: "application/json" }).stream();
-
-  // Upload backup directly to Google Drive
-  await drive.files.create({
-    requestBody: {
-      name: `backup-${new Date().toISOString()}.json`,
-      mimeType: "application/json",
-      parents: [folderId],
-    },
-    media: {
-      mimeType: "application/json",
-      body: backupStream,
-    },
-  });
-
-  console.log("✅ Backup uploaded to Google Drive in 'My Drive/deno-deploy/backups/'");
 }
