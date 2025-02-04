@@ -72,7 +72,7 @@ export async function importSupabaseData() {
       const chunk = data.slice(i, i + 1000);
 
       for (const row of chunk) {
-        batch.set(["penduduk", row.nik], JSON.stringify(row));
+        batch.set(["penduduk", row.kk, row.nik], JSON.stringify(row));
       }
 
       await batch.commit(); // Commit this batch
