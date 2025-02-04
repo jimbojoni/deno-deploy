@@ -1,57 +1,70 @@
 import { google } from "https://esm.sh/googleapis@122.0.0";
 
-export async function googleAuth(){
-	const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
+export async function googleAuth() {
+  const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
 
-	if (!credentialsBase64) {
-		console.error("Error: GOOGLE_API_CREDENTIALS environment variable is not set.");
-		Deno.exit(1);
-	}
+  if (!credentialsBase64) {
+    console.error("Error: GOOGLE_API_CREDENTIALS environment variable is not set.");
+    Deno.exit(1);
+  }
 
-	// Decode Base64 credentials
-	const credentialsJson = JSON.parse(atob(credentialsBase64));
-	console.log("✅ GOOGLE_API_CREDENTIALS loaded successfully.");
+  // Decode Base64 credentials
+  const credentialsJson = JSON.parse(atob(credentialsBase64));
+  console.log("✅ GOOGLE_API_CREDENTIALS loaded successfully.");
 
-	// Authenticate with Google
-	const auth = new google.auth.GoogleAuth({
-		credentials: credentialsJson,
-		scopes: [
-			"https://www.googleapis.com/auth/documents", // Full access to Google Docs
-			"https://www.googleapis.com/auth/drive.file", // Read & write access to Drive files you create
-			"https://www.googleapis.com/auth/spreadsheets", // Full access to Google Sheets
-		],
-	});
-	return auth;
+  // Authenticate with Google
+  const auth = new google.auth.GoogleAuth({
+    credentials: credentialsJson,
+    scopes: [
+      "https://www.googleapis.com/auth/drive.file",      // Read & write access to Drive files
+      "https://www.googleapis.com/auth/spreadsheets",   // Full access to Google Sheets
+      "https://www.googleapis.com/auth/documents",      // Full access to Google Docs
+    ],
+  });
+
+  const authClient = await auth.getClient();
+
+  // Create API clients
+  const drive = google.drive({ version: "v3", auth: authClient });
+  const sheets = google.sheets({ version: "v4", auth: authClient });
+  const docs = google.docs({ version: "v1", auth: authClient });
+
+  return { drive, sheets, docs };
 }
 
 async function getOrCreateBackupFolder(drive: any) {
-  const folderName = "denokv-backup";
+  const folderPath = ["deno-deploy", "backups"];
+  let parentId = "root"; // Start from My Drive
 
-  // Check if the folder already exists
-  const res = await drive.files.list({
-    q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-    fields: "files(id)",
-  });
+  for (const folderName of folderPath) {
+    // Check if the folder exists in the current parent
+    const res = await drive.files.list({
+      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents`,
+      fields: "files(id)",
+    });
 
-  if (res.data.files.length > 0) {
-    return res.data.files[0].id; // Return existing folder ID
+    if (res.data.files.length > 0) {
+      parentId = res.data.files[0].id; // Use existing folder
+    } else {
+      // Create the folder if it doesn't exist
+      const folder = await drive.files.create({
+        requestBody: {
+          name: folderName,
+          mimeType: "application/vnd.google-apps.folder",
+          parents: [parentId], // Set parent folder
+        },
+        fields: "id",
+      });
+      parentId = folder.data.id;
+    }
   }
 
-  // Create the folder if it doesn't exist
-  const folder = await drive.files.create({
-    resource: {
-      name: folderName,
-      mimeType: "application/vnd.google-apps.folder",
-    },
-    fields: "id",
-  });
-
-  return folder.data.id;
+  return parentId;
 }
 
 export async function backupDenoKvToDrive() {
   const kv = await Deno.openKv();
-  const drive = await googleAuth();
+  const { drive } = await googleAuth();
   const folderId = await getOrCreateBackupFolder(drive);
   const backupFilePath = "backup.json";
 
@@ -72,20 +85,20 @@ export async function backupDenoKvToDrive() {
   backupFile.close();
 
   // Read backup file to upload
-  const fileContent = await Deno.readFile(backupFilePath);
+  const fileStream = await Deno.open(backupFilePath, { read: true });
 
-  // Upload to Google Drive
+  // Upload to Google Drive in the specific folder
   await drive.files.create({
     requestBody: {
       name: `backup-${new Date().toISOString()}.json`,
       mimeType: "application/json",
-      parents: [folderId],
+      parents: [folderId], // Store in 'My Drive/deno-deploy/backups/'
     },
     media: {
       mimeType: "application/json",
-      body: fileContent,
+      body: fileStream.readable,
     },
   });
 
-  console.log("✅ Backup uploaded to Google Drive");
+  console.log("✅ Backup uploaded to Google Drive in 'My Drive/deno-deploy/backups/'");
 }
