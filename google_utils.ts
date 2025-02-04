@@ -93,10 +93,10 @@ export async function backupDenoKvToDrive() {
     }
     backupData += "\n]";
 
--    // Convert string to readable stream
--    const backupStream = ReadableStream.from([backupData]);
-+    // Convert string to Uint8Array
-+    const backupBytes = new TextEncoder().encode(backupData);
+    // Convert string to readable stream
+    //const backupStream = ReadableStream.from([backupData]);
+    // Convert string to Uint8Array
+    const backupBytes = new TextEncoder().encode(backupData);
 
     console.log("📤 Uploading backup to Google Drive...");
     
@@ -109,8 +109,8 @@ export async function backupDenoKvToDrive() {
       },
       media: {
         mimeType: "application/json",
--        body: backupStream,
-+        body: backupBytes,
+        //body: backupStream,
+        body: backupBytes,
       },
     });
 
