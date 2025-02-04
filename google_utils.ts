@@ -86,8 +86,9 @@ export async function backupDenoKvToDrive() {
     console.log("📦 Preparing backup...");
 
     // Fetch only one record from Deno KV
-    let backupData = "";
-    let found = false;
+    // Store backup data in memory
+    let backupData = "[\n";
+    let first = true;
 
     for await (const entry of kv.list({ prefix: ["penduduk"] })) {
       const data = JSON.stringify({ key: entry.key, value: entry.value });
