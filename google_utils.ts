@@ -80,13 +80,11 @@ export async function backupDenoKvToDrive() {
 
     if (!folderId) {
       console.error("❌ Error: Could not find or create backup folder.");
-      return;
+      return null; // Return null on failure
     }
 
     console.log("📦 Preparing backup...");
 
-    // Fetch only one record from Deno KV
-    // Store backup data in memory
     let backupData = "[\n";
     let first = true;
 
@@ -97,25 +95,30 @@ export async function backupDenoKvToDrive() {
     }
     backupData += "\n]";
 
+    const fileName = `backup-${new Date().toISOString()}.json`;
+
     const uploadResponse = await drive.files.create({
       requestBody: {
-        name: `backup-${new Date().toISOString()}.json`,
+        name: fileName,
         mimeType: "application/json",
         parents: [folderId],
       },
       media: {
         mimeType: "application/json",
-        //body: backupBlob.stream(), // Use Blob stream
-				body: backupData,
+        body: backupData,
       },
     });
 
     if (uploadResponse.data.id) {
-      console.log(`✅ Backup uploaded successfully! File ID: ${uploadResponse.data.id}`);
+      const fileId = uploadResponse.data.id;
+      console.log(`✅ Backup uploaded successfully! File ID: ${fileId}`);
+      return fileId; // Return the file ID
     } else {
       console.error("❌ Error: Backup upload failed.");
+      return null; // Return null if upload failed
     }
   } catch (error) {
     console.error("❌ Backup process failed:", error);
+    return null; // Return null on error
   }
 }
