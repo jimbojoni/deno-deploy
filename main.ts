@@ -32,7 +32,7 @@ serve(async (req) => {
 		if (fileId) {
 			const fileLink = `https://drive.google.com/file/d/${fileId}/view`;
 			const folderLink = `https://drive.google.com/drive/folders/${folderId}`;
-			return new Response(`✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">View File</a>`, {
+			return new Response(`✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">Open backup folder</a>`, {
 				status: 200,
 				headers: { "Content-Type": "text/html" },
 			});
