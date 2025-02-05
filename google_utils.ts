@@ -35,7 +35,7 @@ export async function googleAuth() {
 async function getOrCreateFolder(
   drive: any, 
   folderName: string, 
-  parentId: string = "root" // Default to My Drive if parentId is not provided
+  parentId: string, // Default to My Drive if parentId is not provided
 ) {
   try {
     console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
@@ -53,14 +53,16 @@ async function getOrCreateFolder(
 
     // Create the folder inside the given parent ID
     console.log(`📁 Creating folder: ${folderName} in ${parentId}`);
-    const folder = await drive.files.create({
-      requestBody: {
-        name: folderName,
-        mimeType: "application/vnd.google-apps.folder",
-        parents: [parentId], // Use "root" if no parentId is given
-      },
-      fields: "id",
-    });
+    const requestBody: any = {
+			name: folderName,
+			mimeType: "application/vnd.google-apps.folder",
+			...(parentId ? { parents: [parentId] } : {}) // Add parents only if parentId is provided
+		};
+
+		const folder = await drive.files.create({
+			requestBody,
+			fields: "id",
+		});
 
     console.log(`✅ Folder created: ${folderName} (ID: ${folder.data.id})`);
     return folder.data.id;
