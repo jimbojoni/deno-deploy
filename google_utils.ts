@@ -72,7 +72,7 @@ async function getOrCreateFolder(drive: any, folderName: string) {
 async function getOrCreateBackupFolder(drive: any) {
   const parentId = await getOrCreateFolder(drive, "deno-deploy");
   //const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
-  const folderName = "db-backups";
+  const folderName = "database-backups";
 
   try {
     console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
