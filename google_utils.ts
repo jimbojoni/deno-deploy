@@ -1,7 +1,4 @@
 import { google } from "https://esm.sh/googleapis@122.0.0";
-//import { Readable } from "node:stream"; // Use this if running in Node.js
-//import { Readable } from "https://deno.land/std@0.224.0/node/stream.ts"; // Use this if running in Deno
-
 
 export async function googleAuth() {
   const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
@@ -35,42 +32,7 @@ export async function googleAuth() {
   return { drive, sheets, docs };
 }
 
-async function getOrCreateFolder(drive: any, folderName: string) {
-  try {
-    console.log(`🔍 Checking for folder: ${folderName} in My Drive`);
-
-    // Search for the folder inside "My Drive"
-    const res = await drive.files.list({
-      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and 'root' in parents`,
-      fields: "files(id)",
-    });
-
-    if (res.data.files.length > 0) {
-      console.log(`✅ Parent folder exists: ${folderName} (ID: ${res.data.files[0].id})`);
-      return res.data.files[0].id;
-    }
-
-    // Create the "deno-deploy" folder inside My Drive (root)
-    console.log(`📁 Creating folder: ${folderName} in My Drive`);
-    const folder = await drive.files.create({
-      requestBody: {
-        name: folderName,
-        mimeType: "application/vnd.google-apps.folder",
-        parents: ["root"], // "root" is My Drive
-      },
-      fields: "id",
-    });
-
-    console.log(`✅ Parent folder created: ${folderName} (ID: ${folder.data.id})`);
-    return folder.data.id;
-  } catch (error) {
-    console.error(`❌ Error finding/creating parent folder: ${error}`);
-    return null;
-  }
-}
-
 async function getOrCreateBackupFolder(drive: any) {
-  //const parentId = await getOrCreateFolder(drive, "deno-deploy");
   const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
   const folderName = "database-backups";
 
@@ -109,7 +71,7 @@ async function getOrCreateBackupFolder(drive: any) {
 
 export async function backupDenoKvToDrive() {
   try {
-    const kv = await Deno.openKv();
+    //const kv = await Deno.openKv();
     const { drive } = await googleAuth();
     const folderId = await getOrCreateBackupFolder(drive);
 
