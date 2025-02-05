@@ -35,8 +35,43 @@ export async function googleAuth() {
   return { drive, sheets, docs };
 }
 
+async function getOrCreateFolder(drive: any, folderName: string) {
+  try {
+    console.log(`🔍 Checking for folder: ${folderName} in My Drive`);
+
+    // Search for the folder inside "My Drive"
+    const res = await drive.files.list({
+      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and 'root' in parents`,
+      fields: "files(id)",
+    });
+
+    if (res.data.files.length > 0) {
+      console.log(`✅ Parent folder exists: ${folderName} (ID: ${res.data.files[0].id})`);
+      return res.data.files[0].id;
+    }
+
+    // Create the "deno-deploy" folder inside My Drive (root)
+    console.log(`📁 Creating folder: ${folderName} in My Drive`);
+    const folder = await drive.files.create({
+      requestBody: {
+        name: folderName,
+        mimeType: "application/vnd.google-apps.folder",
+        parents: ["root"], // "root" is My Drive
+      },
+      fields: "id",
+    });
+
+    console.log(`✅ Parent folder created: ${folderName} (ID: ${folder.data.id})`);
+    return folder.data.id;
+  } catch (error) {
+    console.error(`❌ Error finding/creating parent folder: ${error}`);
+    return null;
+  }
+}
+
 async function getOrCreateBackupFolder(drive: any) {
-  const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
+  const parentId = await getOrCreateFolder(drive, "deno-deploy");
+  //const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
   const folderName = "db-backups";
 
   try {
@@ -88,12 +123,12 @@ export async function backupDenoKvToDrive() {
     let backupData = "[\n";
     let first = true;
 
-    for await (const entry of kv.list({ prefix: ["penduduk"] })) {
+    /*for await (const entry of kv.list({ prefix: ["penduduk"] })) {
       const data = JSON.stringify({ key: entry.key, value: entry.value });
       backupData += first ? data : ",\n" + data;
       first = false;
     }
-    backupData += "\n]";
+    backupData += "\n]";*/
 
     const fileName = `backup-${new Date().toISOString()}.json`;
 
