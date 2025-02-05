@@ -33,41 +33,59 @@ export async function googleAuth() {
 }
 
 async function getOrCreateFolder(
-  drive: any, 
-  folderName: string, 
-  parentId: string, // Default to My Drive if parentId is not provided
+  drive: any,
+  folderName?: string,
+  parentId?: string,
 ) {
+  const defaultName = `Backup_${Date.now()}`;
+  const actualName = folderName || defaultName;
+  const skipCheck = !folderName; // Skip check only when name isn't provided
+
   try {
-    console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
+    if (!skipCheck) {
+      // Build dynamic query based on parentId existence
+      const queryParts = [
+        `name='${actualName}'`,
+        "mimeType='application/vnd.google-apps.folder'",
+        "trashed=false",
+      ];
+      
+      if (parentId) {
+        queryParts.push(`'${parentId}' in parents`);
+      }
 
-    // Check if the folder exists
-    const res = await drive.files.list({
-      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents`,
-      fields: "files(id)",
-    });
+      console.log(`🔍 Checking for existing folder: ${actualName} in ${parentId || "root"}`);
+      const res = await drive.files.list({
+        q: queryParts.join(" and "),
+        fields: "files(id)",
+      });
 
-    if (res.data.files.length > 0) {
-      console.log(`✅ Folder already exists: ${folderName} (ID: ${res.data.files[0].id})`);
-      return res.data.files[0].id;
+      if (res.data.files.length > 0) {
+        console.log(`✅ Found existing folder: ${res.data.files[0].id}`);
+        return res.data.files[0].id;
+      }
     }
 
-    // Create the folder inside the given parent ID
-    console.log(`📁 Creating folder: ${folderName} in ${parentId}`);
+    // Folder creation parameters
     const requestBody: any = {
-			name: folderName,
-			mimeType: "application/vnd.google-apps.folder",
-			...(parentId ? { parents: [parentId] } : {}) // Add parents only if parentId is provided
-		};
+      name: actualName,
+      mimeType: "application/vnd.google-apps.folder",
+    };
 
-		const folder = await drive.files.create({
-			requestBody,
-			fields: "id",
-		});
+    if (parentId) {
+      requestBody.parents = [parentId];
+    }
 
-    console.log(`✅ Folder created: ${folderName} (ID: ${folder.data.id})`);
+    console.log(`📁 Creating folder: ${actualName} in ${parentId || "root"}`);
+    const folder = await drive.files.create({
+      requestBody,
+      fields: "id",
+    });
+
+    console.log(`✅ Successfully created folder: ${folder.data.id}`);
     return folder.data.id;
   } catch (error) {
-    console.error(`❌ Error creating folder: ${error}`);
+    console.error(`❌ Critical error: ${error.message}`);
     return null;
   }
 }
