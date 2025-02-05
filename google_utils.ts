@@ -70,6 +70,11 @@ async function getOrCreateFolder(
     const requestBody: any = {
       name: actualName,
       mimeType: "application/vnd.google-apps.folder",
+			permissions: [{
+        type: 'user',
+        role: 'writer',
+        emailAddress: 'agung.listiy@gmail.com' // Set explicit access
+      }],
     };
 
     if (parentId) {
