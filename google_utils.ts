@@ -32,13 +32,14 @@ export async function googleAuth() {
   return { drive, sheets, docs };
 }
 
-async function getOrCreateBackupFolder(drive: any) {
-  const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
-  const folderName = "database-backups";
-
+async function getOrCreateFolder(
+  drive: any, 
+  folderName: string, 
+  parentId: string = "root" // Default to My Drive if parentId is not provided
+) {
   try {
     console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
-    
+
     // Check if the folder exists
     const res = await drive.files.list({
       q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents`,
@@ -50,13 +51,13 @@ async function getOrCreateBackupFolder(drive: any) {
       return res.data.files[0].id;
     }
 
-    // Create the "backups" folder inside the given parent ID
-    console.log(`📁 Creating folder: ${folderName}`);
+    // Create the folder inside the given parent ID
+    console.log(`📁 Creating folder: ${folderName} in ${parentId}`);
     const folder = await drive.files.create({
       requestBody: {
         name: folderName,
         mimeType: "application/vnd.google-apps.folder",
-        parents: [parentId], // Set parent folder
+        parents: [parentId], // Use "root" if no parentId is given
       },
       fields: "id",
     });
@@ -73,7 +74,7 @@ export async function backupDenoKvToDrive() {
   try {
     //const kv = await Deno.openKv();
     const { drive } = await googleAuth();
-    const folderId = await getOrCreateBackupFolder(drive);
+    const folderId = await getOrCreateFolder(drive, "database-backups");
 
     if (!folderId) {
       console.error("❌ Error: Could not find or create backup folder.");
