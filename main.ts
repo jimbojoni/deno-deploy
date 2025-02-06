@@ -25,8 +25,25 @@ const app = new Hono();
 const SECRET_KEY = Deno.env.get("SECRET_KEY");
 console.log("SECRET_KEY Length:", SECRET_KEY ? SECRET_KEY.length : "Not Set");
 
+// Function to verify JWT
+async function verifyJwt(token: string) {
+    if (!SECRET_KEY) {
+        throw new Error("Secret key not set");
+    }
+
+    const key = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(SECRET_KEY),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["verify"],
+    );
+
+    return await verify(token, key);
+}
+
 // Authentication Middleware
-async function authMiddleware(c: Context, next: Next) {
+async function authMiddleware(c: any, next: any) {
     let token: string | null = null;
 
     // Check Authorization header first
@@ -48,9 +65,11 @@ async function authMiddleware(c: Context, next: Next) {
 
     try {
         const payload = await verifyJwt(token);
+        console.log("Token Payload:", payload); // Debug: Log the payload
         c.set("user", payload);
         await next();
     } catch (err) {
+        console.error("Token Verification Error:", err); // Debug: Log the error
         return c.json({ error: "Invalid token" }, 401);
     }
 }
@@ -74,15 +93,17 @@ app.post("/login", async (c) => {
 
         const token = await create(
             { alg: "HS256", typ: "JWT" },
-            { user: "admin", exp: getNumericDate(3600) },
+            { user: "admin", exp: getNumericDate(3600) }, // Expires in 1 hour
             key,
         );
+
+        console.log("Generated Token:", token); // Debug: Log the token
 
         // Set the cookie header on the context
         c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
 
         // Return the JSON response
-        return c.json({ message: "Login successful" });
+        return c.json({ message: "Login successful", token }); // Include token for debugging
     }
 
     return c.json({ error: "Invalid credentials" }, 401);
