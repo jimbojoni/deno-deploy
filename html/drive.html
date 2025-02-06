@@ -30,8 +30,17 @@
 			.file-list {
 				margin-top: 20px;
 				border: 1px solid #ddd;
-				max-width: 30%;
+				width: 90%; /* Use most of the screen width */
+					max-width: 600px; /* Prevent it from being too wide on large screens */
 			}
+
+			/* Adjust for very small screens */
+			@media (max-width: 400px) {
+				.file-list {
+					width: 95%; /* Slightly bigger on extra small screens */
+				}
+			}
+
 
 		</style>
 </head>
