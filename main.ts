@@ -27,14 +27,23 @@ console.log("SECRET_KEY Length:", SECRET_KEY ? SECRET_KEY.length : "Not Set");
 
 // Authentication Middleware
 async function authMiddleware(c: Context, next: Next) {
+    let token: string | null = null;
+
+    // Check Authorization header first
     const authHeader = c.req.header("Authorization");
-    if (!authHeader) {
-        return c.json({ error: "Authorization header missing" }, 401);
+    if (authHeader?.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
     }
 
-    const token = authHeader.split(" ")[1];
+    // If no header token, check cookies
     if (!token) {
-        return c.json({ error: "Token missing" }, 401);
+        const cookies = c.req.header("Cookie") || "";
+        const jwtCookie = cookies.split(';').find(c => c.trim().startsWith('jwt='));
+        if (jwtCookie) token = jwtCookie.split('=')[1];
+    }
+
+    if (!token) {
+        return c.json({ error: "Authentication required" }, 401);
     }
 
     try {
@@ -50,35 +59,30 @@ async function authMiddleware(c: Context, next: Next) {
 app.post("/login", async (c) => {
     const body = await c.req.json();
 
-    // Check if SECRET_KEY is configured
     if (!SECRET_KEY) {
-        return c.json(
-            { error: "Server misconfiguration: SECRET_KEY is missing" },
-            500,
-        );
+        return c.json({ error: "Server misconfiguration" }, 500);
     }
 
-    // Mock authentication (replace with real database lookup)
     if (body.username === "admin" && body.password === "password") {
         const key = await crypto.subtle.importKey(
-					"raw",
-					new TextEncoder().encode(SECRET_KEY),
-					{ name: "HMAC", hash: "SHA-256" },
-					false,
-					["sign", "verify"],
-				);
+            "raw",
+            new TextEncoder().encode(SECRET_KEY),
+            { name: "HMAC", hash: "SHA-256" },
+            false,
+            ["sign", "verify"],
+        );
 
-        // Create JWT token
         const token = await create(
             { alg: "HS256", typ: "JWT" },
-            { user: "admin", exp: Math.floor(Date.now() / 1000) + 3600 }, // Expires in 1 hour
+            { user: "admin", exp: getNumericDate(3600) },
             key,
         );
 
-        return c.json({ token });
+        // Set JWT as an HTTP-only cookie
+        return c.json({ message: "Login successful" })
+            .header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
     }
 
-    // Invalid credentials
     return c.json({ error: "Invalid credentials" }, 401);
 });
 
