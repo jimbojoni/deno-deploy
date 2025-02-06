@@ -1,46 +1,72 @@
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_export.ts";
-import { backupDenoKvToDrive, } from "./google_utils.ts";
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import eta from "https://cdn.skypack.dev/eta";
+import { importSupabaseData, clearDenoKv, getDatabaseSize } from "./db_import_export.ts";
+import { backupDenoKvToDrive } from "./google_utils.ts";
 
-// Read HTML once
-const html = await Deno.readTextFile("./html/db.html");
+// Create a new Oak application
+const app = new Application();
+const router = new Router();
 
-serve(async (req) => {
-  const url = new URL(req.url);
-
-  if (req.method === "POST") {
-    if (url.pathname === "/db/import") {
-      await importSupabaseData();
-      return new Response("✅ Import Complete!", { status: 200 });
-    }
-    if (url.pathname === "/db/clear") {
-      await clearDenoKv();
-      return new Response("✅ Database Cleared!", { status: 200 });
-    }
-  }
-
-  if (req.method === "GET") {
-    if (url.pathname === "/db/size") {
-      const count = await getDatabaseSize();
-      return new Response(`📊 Total records in Deno KV: ${count}`, { status: 200 });
-    }
-  }
-	
-	if (req.method === "GET" && url.pathname === "/db/backup-drive") {
-		const {fileId, folderId} = await backupDenoKvToDrive();
-
-		if (fileId) {
-			const fileLink = `https://drive.google.com/file/d/${fileId}/view`;
-			const folderLink = `https://drive.google.com/drive/folders/${folderId}`;
-			return new Response(`✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">Open backup folder</a>`, {
-				status: 200,
-				headers: { "Content-Type": "text/html" },
-			});
-		} else {
-			return new Response("❌ Backup failed!", { status: 500 });
-		}
-	}
-
-
-  return new Response(html, { headers: { "Content-Type": "text/html" } });
+// Set up Eta (templating engine)
+eta.configure({
+  views: "./html", // Path to your templates folder
 });
+
+// Route for the main page (index.html)
+router.get("/", async (context) => {
+  const html = await eta.renderFile("index.html", {}); // Render index.html
+  context.response.body = html;
+  context.response.type = "text/html";
+});
+
+// Route for the DB page (db.html)
+router.get("/db", async (context) => {
+  const html = await eta.renderFile("db.html", {}); // Render db.html
+  context.response.body = html;
+  context.response.type = "text/html";
+});
+
+// Route to import data from Supabase
+router.post("/db/import", async (context) => {
+  await importSupabaseData();
+  context.response.body = "✅ Import Complete!";
+  context.response.status = 200;
+});
+
+// Route to clear Deno KV
+router.post("/db/clear", async (context) => {
+  await clearDenoKv();
+  context.response.body = "✅ Database Cleared!";
+  context.response.status = 200;
+});
+
+// Route to get the database size
+router.get("/db/size", async (context) => {
+  const count = await getDatabaseSize();
+  context.response.body = `📊 Total records in Deno KV: ${count}`;
+  context.response.status = 200;
+});
+
+// Route to back up data to Google Drive
+router.get("/db/backup-drive", async (context) => {
+  const { fileId, folderId } = await backupDenoKvToDrive();
+
+  if (fileId) {
+    const fileLink = `https://drive.google.com/file/d/${fileId}/view`;
+    const folderLink = `https://drive.google.com/drive/folders/${folderId}`;
+    context.response.body = `✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">Open backup folder</a>`;
+    context.response.status = 200;
+    context.response.type = "text/html";
+  } else {
+    context.response.body = "❌ Backup failed!";
+    context.response.status = 500;
+  }
+});
+
+// Add routes to the Oak application
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+// Start the server
+console.log("Server running on http://localhost:8000");
+await app.listen({ port: 8000 });
