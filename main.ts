@@ -31,9 +31,12 @@ const authMiddleware = async (c, next) => {
   const key = new TextEncoder().encode(SECRET_KEY);
 
   try {
-    await verify(token, key);
+    // Verify the token
+    const payload = await verify(token, key);
+    console.log("Token payload:", payload); // Debugging
     await next();
-  } catch {
+  } catch (error) {
+    console.error("Token verification failed:", error); // Debugging
     return c.json({ error: "Invalid token" }, 401);
   }
 };
@@ -45,7 +48,7 @@ app.post("/login", async (c) => {
     const key = new TextEncoder().encode(SECRET_KEY);
     const token = await create(
       { alg: "HS256", typ: "JWT" },
-      { user: "admin" },
+      { user: "admin" }, // Payload
       key
     );
     return c.json({ token });
