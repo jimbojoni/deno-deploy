@@ -12,7 +12,7 @@ const router = new Router();
 
 // Route for the main page (index.html)
 router.get("/", async (context) => {
-  const html = await eta.renderAsync("index.html", {});
+  const html = await eta.renderAsync("index", {});
   context.response.body = html;
   context.response.type = "text/html";
 });
