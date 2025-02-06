@@ -109,6 +109,12 @@ app.post("/login", async (c) => {
     return c.json({ error: "Invalid credentials" }, 401);
 });
 
+app.post("/logout", (c) => {
+	// Clear the JWT cookie by setting it to expire immediately
+	c.header("Set-Cookie", `jwt=; HttpOnly; Secure; SameSite=Strict; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
+	return c.json({ message: "Logged out successfully" });
+});
+
 // Public Routes
 app.get("/", async (c) => {
   const html = await eta.renderFile("index.html", {});
