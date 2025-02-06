@@ -24,13 +24,6 @@ router.get("/db", async (context) => {
   context.response.type = "text/html";
 });
 
-// Route for the Drive Files Management (drive.html)
-router.get("/drive", async (context) => {
-  const html = await eta.renderFile("drive.html", {});
-  context.response.body = html;
-  context.response.type = "text/html";
-});
-
 // Route to import data from Supabase
 router.post("/db/import", async (context) => {
   await importSupabaseData();
@@ -69,6 +62,18 @@ router.get("/db/backup-drive", async (context) => {
 });
 
 // Routes under /drive/
+router.get("/drive", async (context) => {
+  const html = await eta.renderFile("drive.html", {});
+  context.response.body = html;
+  context.response.type = "text/html";
+});
+
+router.get("/style/drive.css", async (context) => {
+  const css = await Deno.readTextFile("./html/style/drive.css");
+  context.response.body = css;
+  context.response.type = "text/css";
+});
+
 router.get("/drive/list", async (context) => {
   const files = await listAllFiles();
   context.response.body = files;

@@ -1,0 +1,34 @@
+.file-item {
+	display: flex;
+	align-items: center; /* Keep icon and name vertically aligned */
+	padding: 5px;
+	border-bottom: 1px solid #ddd;
+	justify-content: space-between;
+	field-sizing = content;
+}
+
+.file-item span:first-child {
+	margin-right: 8px; /* Add spacing between icon and name */
+}
+
+.file-item span.name {
+	flex-grow: 1; /* Ensures the name stays on the left */
+	text-align: left; /* Ensures text stays left-aligned */
+	overflow: hidden;
+	//white-space: nowrap;
+	//text-overflow: ellipsis; /* Prevents text from overflowing */
+}
+
+.file-list {
+	margin-top: 20px;
+	border: 1px solid #ddd;
+	width: 100%; /* Use most of the screen width */
+		max-width: 600px; /* Prevent it from being too wide on large screens */
+}
+
+/* Adjust for very small screens */
+@media (max-width: 400px) {
+	.file-list {
+		width: 100%; /* Slightly bigger on extra small screens */
+	}
+}
