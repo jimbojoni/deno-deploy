@@ -78,10 +78,11 @@ app.post("/login", async (c) => {
             key,
         );
 
-        // Return a response and set the cookie header separately
-        const response = c.json({ message: "Login successful" });
-        response.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
-        return response;
+        // Set the cookie header on the context
+        c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
+
+        // Return the JSON response
+        return c.json({ message: "Login successful" });
     }
 
     return c.json({ error: "Invalid credentials" }, 401);
