@@ -20,7 +20,7 @@
   <script>
     async function importData() {
       updateStatus("Importing...");
-      fetch("/db/import", { method: "POST" })
+      fetch("/admin/db/import", { method: "POST" })
         .then(response => response.text())
         .then(result => updateStatus(result))
         .catch(error => updateStatus("❌ Import failed!"));
@@ -28,7 +28,7 @@
 
     async function clearDatabase() {
       updateStatus("Clearing database...");
-      fetch("/db/clear", { method: "POST" })
+      fetch("/admin/db/clear", { method: "POST" })
         .then(response => response.text())
         .then(result => updateStatus(result))
         .catch(error => updateStatus("❌ Clear failed!"));
@@ -36,7 +36,7 @@
 
     async function getDatabaseSize() {
       updateStatus("Getting database size...");
-      fetch("/db/size", { method: "GET" })
+      fetch("/admin/db/size", { method: "GET" })
         .then(response => response.text())
         .then(result => updateStatus(result))
         .catch(error => updateStatus("❌ Failed to get database size!"));
@@ -44,7 +44,7 @@
 		
 		async function backupToDrive() {
 			updateStatus("Uploading backup...");
-			fetch("/db/backup-drive", { method: "GET" })
+			fetch("/admin/db/backup-drive", { method: "GET" })
 				.then(response => response.text())
 				.then(result => updateStatus(result))
 				.catch(error => updateStatus("❌ Backup failed!"));
