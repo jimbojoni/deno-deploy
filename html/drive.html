@@ -11,6 +11,7 @@
 				align-items: center; /* Keep icon and name vertically aligned */
 				padding: 5px;
 				border-bottom: 1px solid #ddd;
+				justify-content: space-between;
 			}
 
 			.file-item span:first-child {
@@ -77,10 +78,11 @@
 
 					const nameSpan = document.createElement("span");
 					nameSpan.textContent = file.name;
+					nameSpan.classList.add("name");
 
 					const deleteButton = document.createElement("button");
 					deleteButton.textContent = "Delete";
-					//deleteButton.classList.add("btn-delete");
+					deleteButton.classList.add("btn-delete");
 					deleteButton.onclick = () => deleteFile(file.id, deleteButton);
 					
 					div.appendChild(icon);
