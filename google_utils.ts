@@ -1,4 +1,5 @@
 import { google } from "https://esm.sh/googleapis@122.0.0";
+const { drive } = await googleAuth();
 
 export async function googleAuth() {
   const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
@@ -72,7 +73,6 @@ async function getOrCreateBackupFolder(drive: any, folderName: string) {
 export async function backupDenoKvToDrive() {
   try {
     //const kv = await Deno.openKv();
-    const { drive } = await googleAuth();
     const folderId = await getOrCreateBackupFolder(drive, "database-backups");
 
     if (!folderId) {
@@ -117,5 +117,82 @@ export async function backupDenoKvToDrive() {
   } catch (error) {
     console.error("❌ Backup process failed:", error);
     return null; // Return null on error
+  }
+}
+
+export async function listAllFiles() {
+  try {
+    const res = await drive.files.list({
+      q: "'me' in owners and trashed = false", // Fetch all files owned by the service account
+      fields: "files(id, name, mimeType)",
+    });
+    return res.data.files;
+  } catch (error) {
+    console.error("Error listing files:", error);
+    return [];
+  }
+}
+
+// Delete a specific file by ID
+export async function deleteFile(fileId: string) {
+  try {
+    await drive.files.delete({ fileId });
+    console.log(`✅ File with ID: ${fileId} deleted`);
+    return true;
+  } catch (error) {
+    if (error.code === 403) {
+      console.error(`❌ Insufficient permissions to delete file with ID: ${fileId}`);
+    } else {
+      console.error(`❌ Failed to delete file with ID: ${fileId}`, error);
+    }
+    return false;
+  }
+}
+
+// Recursively delete all files and folders
+export async function deleteAllFilesAndFolders() {
+  const files = await listAllFiles();
+
+  if (!files.length) {
+    console.log("❌ No files found to delete.");
+    return;
+  }
+
+  for (const file of files) {
+    if (file.mimeType === "application/vnd.google-apps.folder") {
+      // Recursively delete folder contents before deleting the folder itself
+      await deleteFolder(drive, file.id);
+    } else {
+      // Delete file
+      await deleteFile(file.id);
+    }
+  }
+}
+
+// Recursively delete a folder and its contents
+async function deleteFolder(drive: any, folderId: string) {
+  try {
+    const res = await drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`, // List files inside the folder
+      fields: "files(id, mimeType)",
+    });
+
+    const files = res.data.files;
+
+    for (const file of files) {
+      if (file.mimeType === "application/vnd.google-apps.folder") {
+        // Recursively delete subfolders
+        await deleteFolder(drive, file.id);
+      } else {
+        // Delete file
+        await deleteFile(file.id);
+      }
+    }
+
+    // After deleting contents, delete the folder itself
+    await deleteFile(folderId);
+    console.log(`✅ Folder with ID: ${folderId} deleted`);
+  } catch (error) {
+    console.error(`❌ Error deleting folder with ID: ${folderId}`, error);
   }
 }

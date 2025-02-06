@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive File Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .file-list { margin-top: 20px; }
+        .file-item { display: flex; justify-content: space-between; margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn-delete { color: red; cursor: pointer; background: none; border: none; font-size: 14px; }
+        .btn-delete:disabled { color: gray; cursor: not-allowed; }
+        .btn-delete-all { color: white; background: red; padding: 10px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-delete-all:disabled { background: gray; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>Google Drive File Management</h1>
+    <button id="loadFilesButton">Load Files</button>
+    <button id="deleteAllButton" class="btn-delete-all">Delete All Files/Folders</button>
+    <div class="file-list" id="fileList"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loadButton = document.getElementById("loadFilesButton");
+            const deleteAllButton = document.getElementById("deleteAllButton");
+            const fileList = document.getElementById("fileList");
+
+            // Load files from server
+            async function loadFiles() {
+                fileList.innerHTML = "<p>Loading...</p>";
+                try {
+                    const response = await fetch("/drive/list");
+                    if (!response.ok) throw new Error("Failed to fetch files.");
+                    const files = await response.json();
+                    displayFiles(files);
+                } catch (error) {
+                    fileList.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+                }
+            }
+
+            // Display file list
+            function displayFiles(files) {
+                fileList.innerHTML = "";
+                if (files.length === 0) {
+                    fileList.innerHTML = "<p>No files found.</p>";
+                    return;
+                }
+
+                files.forEach(file => {
+                    const div = document.createElement("div");
+                    div.classList.add("file-item");
+
+                    const nameSpan = document.createElement("span");
+                    nameSpan.textContent = file.name;
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Delete";
+                    deleteButton.classList.add("btn-delete");
+                    deleteButton.onclick = () => deleteFile(file.id, deleteButton);
+
+                    div.appendChild(nameSpan);
+                    div.appendChild(deleteButton);
+                    fileList.appendChild(div);
+                });
+            }
+
+            // Delete individual file
+            async function deleteFile(fileId, button) {
+                if (!confirm("Are you sure you want to delete this file?")) return;
+
+                button.disabled = true;
+                try {
+                    const response = await fetch(`/drive/delete/${fileId}`, { method: "DELETE" });
+                    if (!response.ok) throw new Error("Failed to delete file.");
+                    alert("File deleted successfully!");
+                    loadFiles(); // Reload file list
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+                button.disabled = false;
+            }
+
+            // Delete all files/folders
+            async function deleteAllFiles() {
+                if (!confirm("Are you sure you want to delete all files and folders?")) return;
+
+                deleteAllButton.disabled = true;
+                try {
+                    const response = await fetch("/drive/deleteAll", { method: "DELETE" });
+                    if (!response.ok) throw new Error("Failed to delete all files.");
+                    alert("All files and folders deleted successfully!");
+                    loadFiles();
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+                deleteAllButton.disabled = false;
+            }
+
+            // Attach event listeners
+            loadButton.addEventListener("click", loadFiles);
+            deleteAllButton.addEventListener("click", deleteAllFiles);
+
+            // Load files initially
+            loadFiles();
+        });
+    </script>
+</body>
+</html>

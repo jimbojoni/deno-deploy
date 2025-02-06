@@ -1,7 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { importSupabaseData, clearDenoKv, getDatabaseSize } from "./db_import_export.ts";
-import { backupDenoKvToDrive } from "./google_utils.ts";
+import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders } from "./google_utils.ts";
 
 // Set up Eta (templating engine)
 eta.configure({ views: "./html" });
@@ -20,6 +20,13 @@ router.get("/", async (context) => {
 // Route for the DB page (db.html)
 router.get("/db", async (context) => {
   const html = await eta.renderFile("db.html", {});
+  context.response.body = html;
+  context.response.type = "text/html";
+});
+
+// Route for the Drive Files Management (drive.html)
+router.get("/drive", async (context) => {
+  const html = await eta.renderFile("drive.html", {});
   context.response.body = html;
   context.response.type = "text/html";
 });
@@ -59,6 +66,24 @@ router.get("/db/backup-drive", async (context) => {
     context.response.body = "❌ Backup failed!";
     context.response.status = 500;
   }
+});
+
+// Routes under /drive/
+router.get("/drive/list", async (context) => {
+  const files = await listAllFiles();
+  context.response.body = files;
+});
+
+router.delete("/drive/delete/:id", async (context) => {
+  const { id } = context.params;
+  const success = await deleteFile(id);
+  context.response.status = success ? 200 : 500;
+  context.response.body = success ? "File deleted successfully" : "Failed to delete file";
+});
+
+router.delete("/drive/deleteAll", async (context) => {
+  await deleteAllFilesAndFolders();
+  context.response.body = "All files and folders deleted successfully";
 });
 
 // Add routes to the Oak application
