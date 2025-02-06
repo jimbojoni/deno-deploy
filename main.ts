@@ -1,100 +1,93 @@
-import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { Hono } from "https://deno.land/x/hono/mod.ts";
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
-import { importSupabaseData, clearDenoKv, getDatabaseSize } from "./db_import_export.ts";
-import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders } from "./google_utils.ts";
+import {
+  importSupabaseData,
+  clearDenoKv,
+  getDatabaseSize,
+} from "./db_import_export.ts";
+import {
+  backupDenoKvToDrive,
+  listAllFiles,
+  deleteFile,
+  deleteAllFilesAndFolders,
+} from "./google_utils.ts";
 
 // Set up Eta (templating engine)
 eta.configure({ views: "./html" });
 
-// Create a new Oak application
-const app = new Application();
-const router = new Router();
+const app = new Hono();
 
 // Route for the main page (index.html)
-router.get("/", async (context) => {
+app.get("/", async (c) => {
   const html = await eta.renderFile("index.html", {});
-  context.response.body = html;
-  context.response.type = "text/html";
+  return c.html(html);
 });
 
 // Route for the DB page (db.html)
-router.get("/db", async (context) => {
+app.get("/db", async (c) => {
   const html = await eta.renderFile("db.html", {});
-  context.response.body = html;
-  context.response.type = "text/html";
+  return c.html(html);
 });
 
 // Route to import data from Supabase
-router.post("/db/import", async (context) => {
+app.post("/db/import", async (c) => {
   await importSupabaseData();
-  context.response.body = "✅ Import Complete!";
-  context.response.status = 200;
+  return c.text("✅ Import Complete!");
 });
 
 // Route to clear Deno KV
-router.post("/db/clear", async (context) => {
+app.post("/db/clear", async (c) => {
   await clearDenoKv();
-  context.response.body = "✅ Database Cleared!";
-  context.response.status = 200;
+  return c.text("✅ Database Cleared!");
 });
 
 // Route to get the database size
-router.get("/db/size", async (context) => {
+app.get("/db/size", async (c) => {
   const count = await getDatabaseSize();
-  context.response.body = `📊 Total records in Deno KV: ${count}`;
-  context.response.status = 200;
+  return c.text(`📊 Total records in Deno KV: ${count}`);
 });
 
 // Route to back up data to Google Drive
-router.get("/db/backup-drive", async (context) => {
+app.get("/db/backup-drive", async (c) => {
   const { fileId, folderId } = await backupDenoKvToDrive();
 
   if (fileId) {
     const fileLink = `https://drive.google.com/file/d/${fileId}/view`;
     const folderLink = `https://drive.google.com/drive/folders/${folderId}`;
-    context.response.body = `✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">Open backup folder</a>`;
-    context.response.status = 200;
-    context.response.type = "text/html";
-  } else {
-    context.response.body = "❌ Backup failed!";
-    context.response.status = 500;
+    return c.html(
+      `✅ Backup uploaded! <a href="${fileLink}" target="_blank">View File</a>, <a href="${folderLink}" target="_blank">Open backup folder</a>`
+    );
   }
+  return c.text("❌ Backup failed!", 500);
 });
 
 // Routes under /drive/
-router.get("/drive", async (context) => {
+app.get("/drive", async (c) => {
   const html = await eta.renderFile("drive.html", {});
-  context.response.body = html;
-  context.response.type = "text/html";
+  return c.html(html);
 });
 
-router.get("/style/drive.css", async (context) => {
+app.get("/style/drive.css", async (c) => {
   const css = await Deno.readTextFile("./html/style/drive.css");
-  context.response.body = css;
-  context.response.type = "text/css";
+  return c.text(css, 200, { "Content-Type": "text/css" });
 });
 
-router.get("/drive/list", async (context) => {
+app.get("/drive/list", async (c) => {
   const files = await listAllFiles();
-  context.response.body = files;
+  return c.json(files);
 });
 
-router.delete("/drive/delete/:id", async (context) => {
-  const { id } = context.params;
+app.delete("/drive/delete/:id", async (c) => {
+  const id = c.req.param("id");
   const success = await deleteFile(id);
-  context.response.status = success ? 200 : 500;
-  context.response.body = success ? "File deleted successfully" : "Failed to delete file";
+  return success ? c.text("File deleted successfully") : c.text("Failed to delete file", 500);
 });
 
-router.delete("/drive/deleteAll", async (context) => {
+app.delete("/drive/deleteAll", async (c) => {
   await deleteAllFilesAndFolders();
-  context.response.body = "All files and folders deleted successfully";
+  return c.text("All files and folders deleted successfully");
 });
-
-// Add routes to the Oak application
-app.use(router.routes());
-app.use(router.allowedMethods());
 
 // Start the server
 console.log("Server running on http://localhost:8000");
-await app.listen({ port: 8000 });
+Deno.serve(app.fetch);
