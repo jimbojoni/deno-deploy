@@ -92,7 +92,19 @@ export async function backupDenoKvToDrive() {
     }
     backupData += "\n]";*/
 
-    const fileName = `backup-${new Date().toISOString()}.json`;
+    const options = {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false,
+			timeZone: 'Asia/Jakarta' // Use Jakarta time zone
+		};
+
+		const formattedDate = new Date().toLocaleString('id-ID', options).replace(/[^a-zA-Z0-9]/g, '-');
+		const fileName = `backup-${formattedDate}.json`;
 
     const uploadResponse = await drive.files.create({
       requestBody: {
