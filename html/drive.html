@@ -76,7 +76,7 @@
 
 				button.disabled = true;
 				try {
-					rconst response = await fetch(`/drive/delete/${fileId}`, { method: "DELETE" });
+					const response = await fetch(`/drive/delete/${fileId}`, { method: "DELETE" });
 					if (!response.ok) throw new Error("Failed to delete file.");
 					alet("File deleted successfully!");
 					loadFiles(); // Reload file list
