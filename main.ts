@@ -1,14 +1,14 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import Eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
+import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { importSupabaseData, clearDenoKv, getDatabaseSize } from "./db_import_export.ts";
 import { backupDenoKvToDrive } from "./google_utils.ts";
+
+// Set up Eta (templating engine)
+eta.configure({ views: "./html" });
 
 // Create a new Oak application
 const app = new Application();
 const router = new Router();
-
-// Set up Eta (templating engine)
-const eta = new Eta({ views: "./html" });
 
 // Route for the main page (index.html)
 router.get("/", async (context) => {
