@@ -56,6 +56,7 @@ async function authMiddleware(c: Context, next: Next) {
 }
 
 // Login Route (Generates JWT Token)
+// Login Route (Generates JWT Token)
 app.post("/login", async (c) => {
     const body = await c.req.json();
 
@@ -79,7 +80,8 @@ app.post("/login", async (c) => {
         );
 
         // Set JWT as an HTTP-only cookie
-        return c.json({ message: "Login successful" })
+        return c
+            .json({ message: "Login successful" })
             .header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
     }
 
