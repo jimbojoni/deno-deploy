@@ -28,13 +28,17 @@ const authMiddleware = async (c, next) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
+  if (!SECRET_KEY) {
+    return c.json({ error: "Server misconfiguration: SECRET_KEY is missing" }, 500);
+  }
+
   const token = authHeader.split(" ")[1];
   const key = new TextEncoder().encode(SECRET_KEY);
 
   try {
-    // Verify the token
     const payload = await verify(token, key);
     console.log("Token payload:", payload); // Debugging
+    c.set("user", payload);
     await next();
   } catch (error) {
     console.error("Token verification failed:", error); // Debugging
@@ -45,15 +49,21 @@ const authMiddleware = async (c, next) => {
 // Login Route (Generates JWT Token)
 app.post("/login", async (c) => {
   const body = await c.req.json();
+  
+  if (!SECRET_KEY) {
+    return c.json({ error: "Server misconfiguration: SECRET_KEY is missing" }, 500);
+  }
+
   if (body.username === "admin" && body.password === "password") {
     const key = new TextEncoder().encode(SECRET_KEY);
     const token = await create(
       { alg: "HS256", typ: "JWT" },
-      { user: "admin" }, // Payload
+      { user: "admin" },
       key
     );
     return c.json({ token });
   }
+  
   return c.json({ error: "Invalid credentials" }, 401);
 });
 
