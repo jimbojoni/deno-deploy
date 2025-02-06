@@ -1,5 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import eta from "https://cdn.skypack.dev/eta";
+import { Eta } from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { importSupabaseData, clearDenoKv, getDatabaseSize } from "./db_import_export.ts";
 import { backupDenoKvToDrive } from "./google_utils.ts";
 
@@ -8,20 +8,18 @@ const app = new Application();
 const router = new Router();
 
 // Set up Eta (templating engine)
-eta.configure({
-  views: "./html", // Path to your templates folder
-});
+const eta = new Eta({ views: "./html" });
 
 // Route for the main page (index.html)
 router.get("/", async (context) => {
-  const html = await eta.renderFile("index.html", {}); // Render index.html
+  const html = await eta.renderAsync("index.html", {});
   context.response.body = html;
   context.response.type = "text/html";
 });
 
 // Route for the DB page (db.html)
 router.get("/db", async (context) => {
-  const html = await eta.renderFile("db.html", {}); // Render db.html
+  const html = await eta.renderAsync("db.html", {});
   context.response.body = html;
   context.response.type = "text/html";
 });
