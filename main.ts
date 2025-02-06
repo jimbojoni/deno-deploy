@@ -26,28 +26,23 @@ const SECRET_KEY = Deno.env.get("SECRET_KEY");
 console.log("SECRET_KEY Length:", SECRET_KEY ? SECRET_KEY.length : "Not Set");
 
 // Authentication Middleware
-async function authMiddleware(ctx: any, next: any) {
-    const authHeader = ctx.request.headers.get("Authorization");
+async function authMiddleware(c: Context, next: Next) {
+    const authHeader = c.req.header("Authorization");
     if (!authHeader) {
-        ctx.response.status = 401;
-        ctx.response.body = { error: "Authorization header missing" };
-        return;
+        return c.json({ error: "Authorization header missing" }, 401);
     }
 
     const token = authHeader.split(" ")[1];
     if (!token) {
-        ctx.response.status = 401;
-        ctx.response.body = { error: "Token missing" };
-        return;
+        return c.json({ error: "Token missing" }, 401);
     }
 
     try {
         const payload = await verifyJwt(token);
-        ctx.state.user = payload;
+        c.set("user", payload);
         await next();
     } catch (err) {
-        ctx.response.status = 401;
-        ctx.response.body = { error: "Invalid token" };
+        return c.json({ error: "Invalid token" }, 401);
     }
 }
 
