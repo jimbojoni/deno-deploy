@@ -9,40 +9,5 @@
   <h1>Welcome to the Admin Page</h1>
   <p><a href="/admin/db">Go to Database Management</a></p>
 	<p><a href="/admin/drive">Go to Drive Files Management</a></p>
-	
-	<script>
-		document.addEventListener("DOMContentLoaded", async () => {
-			// Get the JWT token from localStorage
-			const token = localStorage.getItem("jwt_token");
-
-			if (!token) {
-				// If no token, redirect to login page
-				window.location.href = "/";
-				return;
-			}
-
-			// Make a fetch request to the protected /admin route
-			try {
-			const response = await fetch("/admin", {
-					method: "GET",
-					headers: {
-						"Authorization": `Bearer ${token}` // Add the token in Authorization header
-					}
-				});
-
-				// Handle the response
-				if (response.ok) {
-					const data = await response.json();
-					// Do something with the data if the request is successful
-				} else {
-					const error = await response.json();
-					console.error("Error:", error);
-				}
-			} catch (error) {
-				console.error("Request failed:", error);
-			}
-		});
-
-	</script>
 </body>
 </html>
