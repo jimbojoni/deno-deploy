@@ -34,7 +34,7 @@ export async function googleAuth() {
 
 async function getOrCreateBackupFolder(drive: any, folderName: string) {
   const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
-  const folderName = folderName;
+  //const folderName = folderName;
 
   try {
     console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
