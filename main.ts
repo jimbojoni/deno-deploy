@@ -65,7 +65,13 @@ app.post("/login", async (c) => {
 
     // Mock authentication (replace with real database lookup)
     if (body.username === "admin" && body.password === "password") {
-        const key = new TextEncoder().encode(SECRET_KEY);
+        const key = await crypto.subtle.importKey(
+					"raw",
+					new TextEncoder().encode(SECRET_KEY),
+					{ name: "HMAC", hash: "SHA-256" },
+					false,
+					["sign", "verify"],
+				);
 
         // Create JWT token
         const token = await create(
