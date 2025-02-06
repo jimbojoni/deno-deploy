@@ -5,23 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Drive File Management</title>
 		<style>
-			/* Style for the file div */
+		
 			.file-item {
 				display: flex;
-				align-items: center;  /* Vertically align the icon and name */
-				justify-content: space-between;  /* Align delete button to the right */
+				align-items: center; /* Keep icon and name vertically aligned */
 				padding: 5px;
-				field-sizing: content;
 				border-bottom: 1px solid #ddd;
 			}
 
-			/* Style for the icon and name */
-			.file-item span {
-				display: inline-flex;
-				align-items: center;
-				//font-size: 1.2em;
+			.file-item span:first-child {
+				margin-right: 8px; /* Add spacing between icon and name */
 			}
-			.file-list { margin-top: 20px; border: 1px solid #ddd; max-width: 30%; }
+
+			.file-item span.name {
+				flex-grow: 1; /* Ensures the name stays on the left */
+				text-align: left; /* Ensures text stays left-aligned */
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis; /* Prevents text from overflowing */
+			}
+
+			.file-list {
+				margin-top: 20px;
+				border: 1px solid #ddd;
+				max-width: 30%;
+			}
+
 		</style>
 </head>
 <body>
