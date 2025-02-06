@@ -14,10 +14,25 @@
       display: block;
       margin: 10px auto;
       padding: 8px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
     button {
       padding: 8px 15px;
       cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #message {
+      margin-top: 20px;
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -33,26 +48,39 @@
   <script>
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      
+
+      // Get form values
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
-      const response = await fetch("/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+      // Clear previous messages
+      document.getElementById("message").innerText = "";
 
-      const data = await response.json();
+      try {
+        // Send login request
+        const response = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
 
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
-        setTimeout(() => {
-          window.location.href = "/admin";
-        }, 1000);
-      } else {
-        document.getElementById("message").innerText = "❌ Invalid credentials!";
+        // Handle response
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("token", data.token);
+          document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
+          setTimeout(() => {
+            window.location.href = "/admin";
+          }, 1000);
+        } else {
+          // Handle error response
+          const data = await response.json();
+          document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
+        }
+      } catch (error) {
+        // Handle network or JSON parsing errors
+        document.getElementById("message").innerText = "❌ An error occurred. Please try again.";
+        console.error("Login error:", error);
       }
     });
   </script>
