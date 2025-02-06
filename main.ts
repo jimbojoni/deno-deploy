@@ -1,6 +1,7 @@
 import { Hono } from "https://deno.land/x/hono/mod.ts";
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
-import { sign, verify } from "https://deno.land/x/djwt/mod.ts";
+import { create, verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+import { encode } from "https://deno.land/std@0.224.0/encoding/base64url.ts";
 import {
   importSupabaseData,
   clearDenoKv,
@@ -26,9 +27,12 @@ const authMiddleware = async (c, next) => {
     return c.text("⛔ Unauthorized", 401);
   }
 
-  const token = authHeader.split(" ")[1];
+  const key = new TextEncoder().encode(SECRET_KEY);
+	const token = await create({ alg: "HS256", typ: "JWT" }, { user: "admin" }, key);
+
   try {
-    await verify(token, SECRET_KEY, "HS256");
+    const key = new TextEncoder().encode(SECRET_KEY);
+		await verify(token, key);
     await next();
   } catch {
     return c.text("⛔ Invalid token", 401);
