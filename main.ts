@@ -19,7 +19,7 @@ router.get("/", async (context) => {
 
 // Route for the DB page (db.html)
 router.get("/db", async (context) => {
-  const html = await eta.renderAsync("db.html", {});
+  const html = await eta.renderFile("db.html", {});
   context.response.body = html;
   context.response.type = "text/html";
 });
