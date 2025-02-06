@@ -16,7 +16,7 @@ export async function googleAuth() {
   const auth = new google.auth.GoogleAuth({
     credentials: credentialsJson,
     scopes: [
-      "https://www.googleapis.com/auth/drive.file",      // Read & write access to Drive files
+      "https://www.googleapis.com/auth/drive",      // Read & write access to Drive files
       "https://www.googleapis.com/auth/spreadsheets",   // Full access to Google Sheets
       "https://www.googleapis.com/auth/documents",      // Full access to Google Docs
     ],
@@ -32,65 +32,39 @@ export async function googleAuth() {
   return { drive, sheets, docs };
 }
 
-async function getOrCreateFolder(
-  drive: any,
-  folderName?: string,
-  parentId?: string,
-) {
-  const defaultName = `Backup_${Date.now()}`;
-  const actualName = folderName || defaultName;
-  const skipCheck = !folderName; // Skip check only when name isn't provided
+async function getOrCreateBackupFolder(drive: any, folderName: string) {
+  const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
+  const folderName = folderName;
 
   try {
-    if (!skipCheck) {
-      // Build dynamic query based on parentId existence
-      const queryParts = [
-        `name='${actualName}'`,
-        "mimeType='application/vnd.google-apps.folder'",
-        "trashed=false",
-      ];
-      
-      if (parentId) {
-        queryParts.push(`'${parentId}' in parents`);
-      }
+    console.log(`🔍 Checking for folder: ${folderName} in parent: ${parentId}`);
+    
+    // Check if the folder exists
+    const res = await drive.files.list({
+      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and '${parentId}' in parents`,
+      fields: "files(id)",
+    });
 
-      console.log(`🔍 Checking for existing folder: ${actualName} in ${parentId || "root"}`);
-      const res = await drive.files.list({
-        q: queryParts.join(" and "),
-        fields: "files(id)",
-      });
-
-      if (res.data.files.length > 0) {
-        console.log(`✅ Found existing folder: ${res.data.files[0].id}`);
-        return res.data.files[0].id;
-      }
+    if (res.data.files.length > 0) {
+      console.log(`✅ Folder already exists: ${folderName} (ID: ${res.data.files[0].id})`);
+      return res.data.files[0].id;
     }
 
-    // Folder creation parameters
-    const requestBody: any = {
-      name: actualName,
-      mimeType: "application/vnd.google-apps.folder",
-			permissions: [{
-        type: 'user',
-        role: 'writer',
-        emailAddress: 'agung.listiy@gmail.com' // Set explicit access
-      }],
-    };
-
-    if (parentId) {
-      requestBody.parents = [parentId];
-    }
-
-    console.log(`📁 Creating folder: ${actualName} in ${parentId || "root"}`);
+    // Create the "backups" folder inside the given parent ID
+    console.log(`📁 Creating folder: ${folderName}`);
     const folder = await drive.files.create({
-      requestBody,
+      requestBody: {
+        name: folderName,
+        mimeType: "application/vnd.google-apps.folder",
+        parents: [parentId], // Set parent folder
+      },
       fields: "id",
     });
 
-    console.log(`✅ Successfully created folder: ${folder.data.id}`);
+    console.log(`✅ Folder created: ${folderName} (ID: ${folder.data.id})`);
     return folder.data.id;
   } catch (error) {
-    console.error(`❌ Critical error: ${error.message}`);
+    console.error(`❌ Error creating folder: ${error}`);
     return null;
   }
 }
@@ -99,7 +73,7 @@ export async function backupDenoKvToDrive() {
   try {
     //const kv = await Deno.openKv();
     const { drive } = await googleAuth();
-    const folderId = await getOrCreateFolder(drive, "database-backups");
+    const folderId = await getOrCreateBackupFolder(drive, "database-backups");
 
     if (!folderId) {
       console.error("❌ Error: Could not find or create backup folder.");
