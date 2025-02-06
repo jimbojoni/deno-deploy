@@ -19,7 +19,7 @@ eta.configure({ views: "./html" });
 
 const app = new Hono();
 const SECRET_KEY = Deno.env.get("SECRET_KEY");
-console.log("SECRET_KEY:", SECRET_KEY ? "[SET]" : "[NOT SET]");
+console.log("SECRET_KEY:", SECRET_KEY ? SECRET_KEY : "[NOT SET]");
 
 // Authentication Middleware
 const authMiddleware = async (c, next) => {
