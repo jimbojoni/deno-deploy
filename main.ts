@@ -1,6 +1,10 @@
 import { Hono } from "https://deno.land/x/hono/mod.ts";
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
-import { create, verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+import {
+    create,
+    getNumericDate,
+    verify,
+} from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 import { encode } from "https://deno.land/std@0.224.0/encoding/base64url.ts";
 import {
   importSupabaseData,
@@ -22,49 +26,59 @@ const SECRET_KEY = Deno.env.get("SECRET_KEY");
 console.log("SECRET_KEY Length:", SECRET_KEY ? SECRET_KEY.length : "Not Set");
 
 // Authentication Middleware
-const authMiddleware = async (c, next) => {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
+async function authMiddleware(ctx: any, next: any) {
+    const authHeader = ctx.request.headers.get("Authorization");
+    if (!authHeader) {
+        ctx.response.status = 401;
+        ctx.response.body = { error: "Authorization header missing" };
+        return;
+    }
 
-  if (!SECRET_KEY) {
-    return c.json({ error: "Server misconfiguration: SECRET_KEY is missing" }, 500);
-  }
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+        ctx.response.status = 401;
+        ctx.response.body = { error: "Token missing" };
+        return;
+    }
 
-  const token = authHeader.split(" ")[1];
-  const key = new TextEncoder().encode(SECRET_KEY);
-
-  try {
-    const payload = await verify(token, key);
-    console.log("Token payload:", payload); // Debugging
-    c.set("user", payload);
-    await next();
-  } catch (error) {
-    console.error("Token verification failed:", error); // Debugging
-    return c.json({ error: "Invalid token" }, 401);
-  }
-};
+    try {
+        const payload = await verifyJwt(token);
+        ctx.state.user = payload;
+        await next();
+    } catch (err) {
+        ctx.response.status = 401;
+        ctx.response.body = { error: "Invalid token" };
+    }
+}
 
 // Login Route (Generates JWT Token)
 app.post("/login", async (c) => {
-  const body = await c.req.json();
-  
-  if (!SECRET_KEY) {
-    return c.json({ error: "Server misconfiguration: SECRET_KEY is missing" }, 500);
-  }
+    const body = await c.req.json();
 
-  if (body.username === "admin" && body.password === "password") {
-    const key = new TextEncoder().encode(SECRET_KEY);
-    const token = await create(
-      { alg: "HS256", typ: "JWT" },
-      { user: "admin" },
-      key
-    );
-    return c.json({ token });
-  }
-  
-  return c.json({ error: "Invalid credentials" }, 401);
+    // Check if SECRET_KEY is configured
+    if (!SECRET_KEY) {
+        return c.json(
+            { error: "Server misconfiguration: SECRET_KEY is missing" },
+            500,
+        );
+    }
+
+    // Mock authentication (replace with real database lookup)
+    if (body.username === "admin" && body.password === "password") {
+        const key = new TextEncoder().encode(SECRET_KEY);
+
+        // Create JWT token
+        const token = await create(
+            { alg: "HS256", typ: "JWT" },
+            { user: "admin", exp: Math.floor(Date.now() / 1000) + 3600 }, // Expires in 1 hour
+            key,
+        );
+
+        return c.json({ token });
+    }
+
+    // Invalid credentials
+    return c.json({ error: "Invalid credentials" }, 401);
 });
 
 // Public Routes
