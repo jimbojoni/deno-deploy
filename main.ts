@@ -1,5 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import { Eta } from "https://deno.land/x/eta@v2.0.0/mod.ts";
+import Eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { importSupabaseData, clearDenoKv, getDatabaseSize } from "./db_import_export.ts";
 import { backupDenoKvToDrive } from "./google_utils.ts";
 
