@@ -23,30 +23,34 @@ const SECRET_KEY = Deno.env.get("SECRET_KEY");
 // Authentication Middleware
 const authMiddleware = async (c, next) => {
   const authHeader = c.req.header("Authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return c.text("⛔ Unauthorized", 401);
+  if (!authHeader?.startsWith("Bearer ")) {
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
+  const token = authHeader.split(" ")[1];
   const key = new TextEncoder().encode(SECRET_KEY);
-	const token = await create({ alg: "HS256", typ: "JWT" }, { user: "admin" }, key);
 
   try {
-    const key = new TextEncoder().encode(SECRET_KEY);
-		await verify(token, key);
+    await verify(token, key);
     await next();
   } catch {
-    return c.text("⛔ Invalid token", 401);
+    return c.json({ error: "Invalid token" }, 401);
   }
 };
 
 // Login Route (Generates JWT Token)
 app.post("/login", async (c) => {
   const body = await c.req.json();
-  if (body.username === "admin" && body.password === "password") { // Replace with real authentication logic
-    const token = await sign({ user: "admin" }, SECRET_KEY, "HS256");
+  if (body.username === "admin" && body.password === "password") {
+    const key = new TextEncoder().encode(SECRET_KEY);
+    const token = await create(
+      { alg: "HS256", typ: "JWT" },
+      { user: "admin" },
+      key
+    );
     return c.json({ token });
   }
-  return c.text("❌ Invalid credentials", 401);
+  return c.json({ error: "Invalid credentials" }, 401);
 });
 
 // Public Routes
