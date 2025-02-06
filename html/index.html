@@ -67,10 +67,11 @@
         // Handle response
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem("token", data.token);
+          // Store the JWT token in localStorage
+          localStorage.setItem("jwt_token", data.token);
           document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
           setTimeout(() => {
-            window.location.href = "/admin";
+            window.location.href = "/admin"; // Redirect to the admin page
           }, 1000);
         } else {
           // Handle error response
