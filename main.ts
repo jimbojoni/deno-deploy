@@ -90,5 +90,5 @@ app.delete("/admin/drive/deleteAll", async (c) => {
 });
 
 // Start the server
-console.log("Server running on http://localhost:8000");
+console.log("Server running on Deno Deploy");
 Deno.serve(app.fetch);
