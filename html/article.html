@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latest News</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .news-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+    h2 { margin: 0 0 5px; }
+    .news-image { max-width: 100%; height: auto; display: block; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Latest News</h1>
+  <% if (news.length === 0) { %>
+    <p>No news available.</p>
+  <% } else { %>
+    <% news.forEach(article => { %>
+      <div class="news-item">
+        <h2><%= article.title %></h2>
+        <p><%= article.content %></p>
+        <% if (article.image) { %>
+          <img class="news-image" src="<%= article.image %>" alt="News Image">
+        <% } %>
+      </div>
+    <% }) %>
+  <% } %>
+</body>
+</html>
