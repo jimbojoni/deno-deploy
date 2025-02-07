@@ -1,3 +1,4 @@
+import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 export async function displayArticle(c) {
   const news = [
     { id: "1", title: "Breaking News", content: "This is a breaking news article." },
