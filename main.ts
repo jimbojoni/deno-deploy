@@ -90,5 +90,14 @@ app.delete("/admin/drive/deleteAll", async (c) => {
 });
 
 // Start the server
-console.log("Server running on Deno Deploy");
-Deno.serve(app.fetch);
+//console.log("Server running on Deno Deploy");
+//Deno.serve(app.fetch);
+console.log("Starting server on Deno Deploy...");
+try {
+  Deno.serve((req) => {
+    console.log(`Incoming request: ${req.url}`);
+    return app.fetch(req);
+  });
+} catch (e) {
+  console.error("Error starting server:", e);
+}
