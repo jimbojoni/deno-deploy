@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Latest News</title>
+  <title>Latest article</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    .news-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+    .article-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
     h2 { margin: 0 0 5px; }
-    .news-image { max-width: 100%; height: auto; display: block; margin-top: 5px; }
+    .article-image { max-width: 100%; height: auto; display: block; margin-top: 5px; }
   </style>
 </head>
 <body>
-  <h1>Latest News</h1>
-  <% if (news.length === 0) { %>
-    <p>No news available.</p>
+  <h1>Latest article</h1>
+  <% if (article.length === 0) { %>
+    <p>No article available.</p>
   <% } else { %>
-    <% news.forEach(article => { %>
-      <div class="news-item">
+    <% article.forEach(article => { %>
+      <div class="article-item">
         <h2><%= article.title %></h2>
         <p><%= article.content %></p>
         <% if (article.image) { %>
-          <img class="news-image" src="<%= article.image %>" alt="News Image">
+          <img class="article-image" src="<%= article.image %>" alt="article Image">
         <% } %>
       </div>
     <% }) %>
