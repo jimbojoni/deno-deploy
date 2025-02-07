@@ -24,6 +24,20 @@ export async function displayArticle(c) {
   return c.html(html);
 }
 
+export async function displayAllArticles (c) {
+  // Fetch latest articles from Supabase
+  const { data: articles, error } = await supabase.from("articles").select("*");
+
+  if (error) {
+    console.error(error);
+    return c.text("Failed to load articles", 500);
+  }
+
+  // Render `index.html` with updated articles
+  const html = await eta.renderFile("index.html", { articles });
+  return c.html(html);
+}
+
 export async function postArticle(c){
   const body = await c.req.parseBody();
   const { title, content, images } = body;
@@ -46,6 +60,5 @@ export async function postArticle(c){
   }
 
   // Redirect to success page
-  const html = await eta.renderFile("news.html", { title });
-  return c.html(html);
+  return c.redirect("/");
 }

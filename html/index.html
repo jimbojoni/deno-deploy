@@ -2,12 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Success</title>
+  <title>News Articles</title>
 </head>
 <body>
+  <h1>Latest News</h1>
 	<a href="/login">Login</a>
-	<p></p>
-  <h1>Article "<%= it.title %>" Created Successfully!</h1>
-  <a href="/create-article">Create article</a>
+  <a href="/create">Create a New Article</a>
+  
+  <ul>
+    <% if (it.articles.length === 0) { %>
+      <p>No articles yet.</p>
+    <% } else { %>
+      <% it.articles.forEach(article => { %>
+        <li>
+          <h2><%= article.title %></h2>
+          <p><%= article.content %></p>
+          <% if (article.images.length > 0) { %>
+            <p>Images:</p>
+            <ul>
+              <% article.images.forEach(image => { %>
+                <li><img src="<%= image %>" width="100"></li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </li>
+      <% }) %>
+    <% } %>
+  </ul>
 </body>
 </html>
