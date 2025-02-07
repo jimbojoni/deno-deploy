@@ -1,5 +1,5 @@
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
-eta.configure({ views: Deno.cwd() + "/html" });
+eta.configure({ views: "./html" });
 export async function displayArticle(c) {
   const news = [
     { id: "1", title: "Breaking News", content: "This is a breaking news article." },
@@ -8,6 +8,7 @@ export async function displayArticle(c) {
 
   const articleId = c.req.param("article_id");
   const article = news.find((n) => n.id === articleId);
+	console.log (JSON.stringify(article));
 
   if (!article) {
     return c.text("Article not found", 404);
