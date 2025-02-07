@@ -22,6 +22,11 @@ app.post("/logout", (c) => {
 });
 
 // Public Routes
+app.get("/login", async (c) => {
+  const html = await eta.renderFile("login.html", {});
+  return c.html(html);
+});
+
 app.get("/", async (c) => {
   const html = await eta.renderFile("index.html", {});
   return c.html(html);
