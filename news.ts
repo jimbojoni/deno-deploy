@@ -24,7 +24,7 @@ export async function displayArticle(c) {
   return c.html(html);
 }
 
-export async function postArticle(c) => {
+export async function postArticle(c){
   const body = await c.req.parseBody();
   const { title, content, images } = body;
 
