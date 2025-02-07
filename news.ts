@@ -1,9 +1,5 @@
-// news.ts
-import { Eta } from "https://deno.land/x/eta@v2.0.0/mod.ts";
-
-// Initialize Eta with the correct views directory
-const eta = new Eta({ views: Deno.cwd() + "/templates" }); // Adjust path as needed
-
+import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
+eta.configure({ views: Deno.cwd() + "/html" });
 export async function displayArticle(c) {
   const news = [
     { id: "1", title: "Breaking News", content: "This is a breaking news article." },
@@ -17,7 +13,6 @@ export async function displayArticle(c) {
     return c.text("Article not found", 404);
   }
 
-  // Render the template with the article data
-  const html = await eta.render("article", { article });
+  const html = await eta.renderFile("article.html", { article });
   return c.html(html);
 }
