@@ -3,28 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Latest article</title>
+  <title><%= article.title %></title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    .article-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-    h2 { margin: 0 0 5px; }
-    .article-image { max-width: 100%; height: auto; display: block; margin-top: 5px; }
+    .article { border: 1px solid #ddd; padding: 20px; }
   </style>
 </head>
 <body>
-  <h1>Latest article</h1>
-  <% if (article.length === 0) { %>
-    <p>No article available.</p>
-  <% } else { %>
-    <% article.forEach(article => { %>
-      <div class="article-item">
-        <h2><%= article.title %></h2>
-        <p><%= article.content %></p>
-        <% if (article.image) { %>
-          <img class="article-image" src="<%= article.image %>" alt="article Image">
-        <% } %>
-      </div>
-    <% }) %>
-  <% } %>
+  <div class="article">
+    <h1><%= article.title %></h1>
+    <p><%= article.content %></p>
+  </div>
 </body>
 </html>
