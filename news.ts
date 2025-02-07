@@ -12,6 +12,6 @@ export async function displayArticle(c) {
     return c.text("Article not found", 404);
   }
 
-  const html = await eta.renderFile("article", { article });
+  const html = await eta.renderFile("article.html", { article });
   return c.html(html);
 }
