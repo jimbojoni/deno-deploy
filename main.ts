@@ -91,17 +91,7 @@ app.delete("/admin/drive/deleteAll", async (c) => {
   return c.text("All files and folders deleted successfully");
 });
 
-/* Start the server
-//console.log("Server running on Deno Deploy");
-//Deno.serve(app.fetch);
-console.log("Starting server on Deno Deploy...");
-try {
-  Deno.serve((req) => {
-    console.log(`Incoming request: ${req.url}`);
-    return app.fetch(req);
-  });
-} catch (e) {
-  console.error("Error starting server:", e);
-}*/
+// News Section
+app.get("/news/:article_id", displayArticle);
 
 export default app;
