@@ -27,7 +27,7 @@ app.get("/login", async (c) => {
   return c.html(html);
 });
 
-app.get("/", async displayAllArticles);
+app.get("/", displayAllArticles);
 
 // Apply authentication to all /db and /drive routes
 app.use("/admin/*", authMiddleware);
