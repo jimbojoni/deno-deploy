@@ -9,15 +9,25 @@ body {
 	margin: 0 auto;
 }
 .header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
 }
+
+.nav-links {
+  display: flex;
+  gap: 16px; /* Space between Home & Create Article */
+}
+
 .header a {
-	text-decoration: none;
-	color: #2563eb;
+  text-decoration: none;
+  color: #2563eb;
 }
+
 .header a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
+}
+
+.login-link {
+  margin-left: auto; /* Pushes login to the right */
 }
