@@ -7,6 +7,12 @@
   gap: 16px;
 }
 
+.article::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 .image-gallery {
   position: relative;
   display: flex;
