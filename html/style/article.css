@@ -155,3 +155,38 @@
 .older {
   margin-left: auto;
 }
+
+/* Base table styling */
+table {
+	width: 100%;
+	border-collapse: collapse; /* Merge borders for a cleaner look */
+	margin: 20px 0;
+	font-family: Arial, sans-serif;
+}
+
+/* Styling for table header */
+thead {
+	background-color: #f2f2f2;
+}
+
+thead th {
+	padding: 10px;
+	border: 1px solid #ddd;
+	text-align: left;
+}
+
+/* Styling for table body */
+tbody td {
+	padding: 10px;
+	border: 1px solid #ddd;
+}
+
+/* Zebra stripes for rows */
+tbody tr:nth-child(even) {
+	background-color: #fafafa;
+}
+
+/* Hover effect for rows */
+tbody tr:hover {
+	background-color: #f1f1f1;
+}
