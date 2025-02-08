@@ -73,11 +73,6 @@ app.get("/admin/drive", async (c) => {
   return c.html(html);
 });
 
-app.get("/style/drive.css", async (c) => {
-  const css = await Deno.readTextFile("./html/style/drive.css");
-  return c.text(css, 200, { "Content-Type": "text/css" });
-});
-
 app.get("/admin/drive/list", async (c) => {
   const files = await listAllFiles();
   return c.json(files);
@@ -103,5 +98,17 @@ app.get("/create-article", async (c) => {
 });
 // Handle article submission
 app.post("/create-article", postArticle);
+
+// Style CSS
+app.get("/style/drive.css", async (c) => {
+  const css = await Deno.readTextFile("./html/style/drive.css");
+  return c.text(css, 200, { "Content-Type": "text/css" });
+});
+
+app.get("/style/index.css", async (c) => {
+  const css = await Deno.readTextFile("./html/style/index.css");
+  return c.text(css, 200, { "Content-Type": "text/css" });
+});
+
 
 export default app;

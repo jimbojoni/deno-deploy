@@ -2,42 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>News Articles</title>
+  <title>Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <a href="/login">Login</a>
-  <a href="/create-article">Create a New Article</a>
-  <p></p>
-  <h1>Kabar Terbaru</h1>
-  <ul>
-    <% if (it.articles.length === 0) { %>
-      <p>No articles yet.</p>
-    <% } else { %>
-      <% it.articles.forEach(article => { %>
-        <li>
-          <h2><a href="/news/<%= article.id %>"><%= article.title %></a></h2>
-          <p><%= article.content %></p>
-          <% if (article.images && article.images.length > 0) { %>
-            <p>Images:</p>
-            <ul>
-              <% article.images.forEach(image => { %>
-                <li><img src="<%= image %>" width="100"></li>
-              <% }) %>
-            </ul>
-          <% } %>
-        </li>
-      <% }) %>
-    <% } %>
-  </ul>
+<body class="bg-gray-100 text-gray-900 p-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <a href="/login" class="text-blue-500 hover:underline">Login</a>
+      <a href="/create-article" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create a New Article</a>
+    </div>
 
-  <!-- Pagination Links -->
-  <div>
-    <% if (it.prevPage) { %>
-      <a href="/?page=<%= it.prevPage %>&limit=5">Previous</a>
-    <% } %>
-    <% if (it.nextPage) { %>
-      <a href="/?page=<%= it.nextPage %>&limit=5">Next</a>
-    <% } %>
+    <h1 class="text-3xl font-bold mb-4">Kabar Terbaru</h1>
+
+    <ul class="space-y-4">
+      <% if (it.articles.length === 0) { %>
+        <p class="text-gray-500">No articles yet.</p>
+      <% } else { %>
+        <% it.articles.forEach(article => { %>
+          <li class="bg-white shadow-md p-4 rounded-lg">
+            <h2 class="text-xl font-semibold">
+              <a href="/news/<%= article.id %>" class="text-blue-600 hover:underline"><%= article.title %></a>
+            </h2>
+            <p class="text-gray-700"><%= article.content %></p>
+            <% if (article.images && article.images.length > 0) { %>
+              <p class="text-sm text-gray-500 mt-2">Images:</p>
+              <div class="flex space-x-2 mt-2">
+                <% article.images.forEach(image => { %>
+                  <img src="<%= image %>" width="100" class="rounded-lg shadow">
+                <% }) %>
+              </div>
+            <% } %>
+          </li>
+        <% }) %>
+      <% } %>
+    </ul>
+
+    <!-- Pagination Links -->
+    <div class="flex justify-between mt-6">
+      <% if (it.prevPage) { %>
+        <a href="/?page=<%= it.prevPage %>&limit=5" class="text-blue-500 hover:underline">Previous</a>
+      <% } %>
+      <% if (it.nextPage) { %>
+        <a href="/?page=<%= it.nextPage %>&limit=5" class="text-blue-500 hover:underline">Next</a>
+      <% } %>
+    </div>
   </div>
 </body>
 </html>
