@@ -24,7 +24,7 @@
 						<button class="prev-btn">&lt;</button>
 						<div class="image-container">
 							<% it.article.images.forEach((image, index) => { %>
-								<img src="<%= image %>" alt="Article Image" class="gallery-image <%= index === 0 ? 'active' : '' %>">
+								<img src="<%= image %>" alt="Article Image" class="gallery-image <%= index === 0 ? 'active' : '' %>" onclick="openFullscreen(this)">
 							<% }) %>
 						</div>
 						<button class="next-btn">&gt;</button>
@@ -37,7 +37,11 @@
 				<p><%= it.article.content %></p>
 			</div>
 		</div>
-		
+		<div id="fullscreen-overlay" class="fullscreen-overlay">
+			<button class="close-btn" onclick="closeFullscreen()">X</button>
+			<img id="fullscreen-img" src="" alt="Fullscreen Image">
+		</div>
+
 		<script>
 			document.addEventListener("DOMContentLoaded", function () {
 				const images = document.querySelectorAll(".gallery-image");
@@ -61,6 +65,18 @@
 
 				showImage(currentIndex);
 			});
+
+			function openFullscreen(img) {
+				const overlay = document.getElementById("fullscreen-overlay");
+				const fullscreenImg = document.getElementById("fullscreen-img");
+
+				fullscreenImg.src = img.src;
+				overlay.style.display = "flex";
+			}
+
+			function closeFullscreen() {
+				document.getElementById("fullscreen-overlay").style.display = "none";
+			}
 		</script>
 
 	</div>
