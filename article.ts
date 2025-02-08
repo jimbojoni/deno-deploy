@@ -15,7 +15,7 @@ eta.configure({ views: "./html" });
 export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
 
-  // Get current article
+  // Fetch the current article
   const { data: article, error } = await supabase
     .from("articles")
     .select("*")
@@ -26,27 +26,28 @@ export async function displayArticle(c) {
     return c.text("Article not found", 404);
   }
 
-  // Get previous and next articles based on created_at
-  const { data: prevArticle } = await supabase
+  // Fetch newer article (created after this one)
+  const { data: newerArticle } = await supabase
     .from("articles")
     .select("id")
-    .lt("created_at", article.created_at)
+    .gt("created_at", article.created_at)
     .order("created_at", { ascending: true })
     .limit(1)
     .single();
 
-  const { data: nextArticle } = await supabase
+  // Fetch older article (created before this one)
+  const { data: olderArticle } = await supabase
     .from("articles")
     .select("id")
-    .gt("created_at", article.created_at)
+    .lt("created_at", article.created_at)
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
   const html = await eta.renderFile("article.html", {
     article,
-    prevArticle,
-    nextArticle,
+    newerArticle,
+    olderArticle,
   });
 
   return c.html(html);

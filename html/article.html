@@ -39,15 +39,13 @@
 		</div>
 		
 		<div class="article-navigation">
-			<% if (it.prevArticle) { %>
-				<a href="/article/<%= it.prevArticle.id %>" class="nav-button">← Previous Article</a>
+			<% if (it.newerArticle) { %>
+				<a href="/article/<%= it.newerArticle.id %>" class="article-nav-btn newer">⬅ Newer</a>
 			<% } %>
-
-			<% if (it.nextArticle) { %>
-				<a href="/article/<%= it.nextArticle.id %>" class="nav-button">Next Article →</a>
+			<% if (it.olderArticle) { %>
+				<a href="/article/<%= it.olderArticle.id %>" class="article-nav-btn older">Older ➡</a>
 			<% } %>
 		</div>
-
 		
 		<div id="fullscreen-overlay" class="fullscreen-overlay">
 			<button class="close-btn" onclick="closeFullscreen()">X</button>
