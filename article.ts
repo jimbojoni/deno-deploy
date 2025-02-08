@@ -7,13 +7,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 eta.configure({ views: "./html" });
 export async function displayArticle(c) {
-  const news = [
-    { id: "1", title: "Breaking News", content: "This is a breaking news article." },
-    { id: "2", title: "Tech Update", content: "Latest updates from the tech world." },
-  ];
-
   const articleId = c.req.param("article_id");
-  const article = news.find((n) => n.id === articleId);
+  const { data: articles, error } = await supabase
+		.from("articles")
+		.select("*")
+		.eq("id", articleId)
+		.single(); // Ensures only one article is returned
+
+	if (error || !articles) {
+		return c.text("Article not found", 404);
+	}
 	console.log (JSON.stringify(article));
 
   if (!article) {
