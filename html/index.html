@@ -48,14 +48,19 @@
     </ul>
 
     <!-- Pagination Links -->
-    <div class="pagination">
-      <% if (it.prevPage) { %>
-        <a href="/?page=<%= it.prevPage %>&limit=5">Previous</a>
-      <% } %>
-      <% if (it.nextPage) { %>
-        <a href="/?page=<%= it.nextPage %>&limit=5">Next</a>
-      <% } %>
-    </div>
+		<div class="article-navigation">
+			<% if (it.newerArticle) { %>
+				<a href="/?page=<%= it.prevPage %>&limit=5" class="article-nav-button newer">Artikel Baru</a>
+			<% } else { %>
+				<span></span> <!-- Empty span to keep alignment -->
+			<% } %>
+			<% if (it.olderArticle) { %>
+				<a href="/?page=<%= it.nextPage %>&limit=5" class="article-nav-button older">Artikel Lama</a>
+			<% } else { %>
+				<span></span> <!-- Empty span to keep alignment -->
+			<% } %>
+		</div>
+		
   </div>
 </body>
 </html>

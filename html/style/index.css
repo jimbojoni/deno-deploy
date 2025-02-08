@@ -30,18 +30,6 @@ ul {
 .article p {
 	color: #374151;
 }
-.pagination {
-	display: flex;
-	justify-content: space-between;
-	margin-top: 24px;
-}
-.pagination a {
-	text-decoration: none;
-	color: #2563eb;
-}
-.pagination a:hover {
-	text-decoration: underline;
-}
 
 .article-content {
   display: flex;
@@ -70,4 +58,31 @@ ul {
 
 .read-more:hover {
   text-decoration: underline;
+}
+
+
+.article-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.article-nav-button {
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.article-nav-button:hover {
+  background: #0056b3;
+}
+
+.newer {
+  margin-right: auto;
+}
+
+.older {
+  margin-left: auto;
 }
