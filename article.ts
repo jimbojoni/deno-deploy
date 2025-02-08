@@ -26,13 +26,6 @@ export async function displayArticle(c) {
     return c.text("Article not found", 404);
   }
 
-  const marked = new Marked({
-		breaks: true,
-		gfm: true,
-		mangle: false,
-		headerIds: false
-	});
-
 	// Convert Markdown to HTML
 	const articleContentHtml = marked.parse(article.content);
 
