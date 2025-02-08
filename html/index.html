@@ -49,18 +49,17 @@
 
     <!-- Pagination Links -->
 		<div class="article-navigation">
-			<% if (it.newerArticle) { %>
+			<% if (it.prevPage) { %>
 				<a href="/?page=<%= it.prevPage %>&limit=5" class="article-nav-button newer">Artikel Baru</a>
 			<% } else { %>
 				<span></span> <!-- Empty span to keep alignment -->
 			<% } %>
-			<% if (it.olderArticle) { %>
+			<% if (it.nextPage) { %>
 				<a href="/?page=<%= it.nextPage %>&limit=5" class="article-nav-button older">Artikel Lama</a>
 			<% } else { %>
 				<span></span> <!-- Empty span to keep alignment -->
 			<% } %>
 		</div>
-		
   </div>
 </body>
 </html>
