@@ -18,6 +18,7 @@
 		</div>
 
 		<div class="article">
+			<h1><%= it.article.title %></h1>
 			<p>
 				<% if (it.article.images && it.article.images.length > 0) { %>
 					<div class="image-gallery" style="float: left">
@@ -30,7 +31,7 @@
 						<button class="next-btn">&gt;</button>
 					</div>
 				<% } %>
-				<h1><%= it.article.title %></h1>
+				
 				<div><%~ it.article.content %></div>
 			</p>
 			<!--
@@ -53,7 +54,7 @@
 				<div><%~ it.article.content %></div>
 			</div>
 		</div>
-		
+		-->
 		<div class="article-navigation">
 			<% if (it.newerArticle) { %>
 				<a href="/article/<%= it.newerArticle.id %>" class="article-nav-button newer">Artikel Baru</a>
