@@ -100,9 +100,24 @@ app.get("/create-article", async (c) => {
 // Handle article submission
 app.post("/create-article", postArticle);
 
-// Style CSS & Script Js
 // Serve static files from the 'public' folder
-app.use("/js/*", serveStatic({ root: "./html/js" }));
-app.use("/style/*", serveStatic({ root: "./html/style" }));
+//app.use("/js/*", serveStatic({ root: "./html/js" }));
+//app.use("/style/*", serveStatic({ root: "./html/style" }));
+
+// Serve JS files
+app.use("/js/*", serveStatic({
+  root: "./html",  // Changed from "./html/js"
+  pathRewrite: { '/js/': '/' }, // Rewrites /js/ to root of html/js
+}));
+
+// Serve CSS files
+app.use("/style/*", serveStatic({
+  root: "./html",  // Changed from "./html/style"
+  pathRewrite: { '/style/': '/' },
+  mimes: {
+    css: "text/css",
+    js: "text/javascript",
+  }
+}));
 
 export default app;
