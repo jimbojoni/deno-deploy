@@ -99,18 +99,9 @@ app.get("/create-article", async (c) => {
 // Handle article submission
 app.post("/create-article", postArticle);
 
-// Style CSS
-const styles = ["site", "drive", "index", "article"];
-
-styles.forEach(style => {
-  app.get(`/style/${style}.css`, async (c) => {
-    try {
-      const css = await Deno.readTextFile(`./html/style/${style}.css`);
-      return c.text(css, 200, { "Content-Type": "text/css" });
-    } catch (error) {
-      return c.text("CSS file not found", 404);
-    }
-  });
-});
+// Style CSS & Script Js
+// Serve static files from the 'public' folder
+app.use("/js/*", serveStatic({ root: "./html/js" }));
+app.use("/style/*", serveStatic({ root: "./html/style" }));
 
 export default app;
