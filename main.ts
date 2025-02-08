@@ -94,7 +94,7 @@ app.delete("/admin/drive/deleteAll", async (c) => {
   return c.text("All files and folders deleted successfully");
 });
 
-// News Section
+// Article Section
 app.get("/news/:article_id", displayArticle);
 // Serve the article creation form
 app.get("/create-article", async (c) => {

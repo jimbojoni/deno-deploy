@@ -6,7 +6,7 @@
 </head>
 <body>
   <h1>Latest News</h1>
-	<a href="/login">Login</a>
+  <a href="/login">Login</a>
   <a href="/create-article">Create a New Article</a>
   
   <ul>
@@ -15,7 +15,7 @@
     <% } else { %>
       <% it.articles.forEach(article => { %>
         <li>
-          <h2><%= article.title %></h2>
+          <h2><a href="/news/<%= article.id %>"><%= article.title %></a></h2>
           <p><%= article.content %></p>
           <% if (article.images.length > 0) { %>
             <p>Images:</p>
@@ -30,4 +30,5 @@
     <% } %>
   </ul>
 </body>
+</html>
 </html>
