@@ -37,6 +37,18 @@
 				<p><%= it.article.content %></p>
 			</div>
 		</div>
+		
+		<div class="article-navigation">
+			<% if (it.prevArticle) { %>
+				<a href="/article/<%= it.prevArticle.id %>" class="nav-button">← Previous Article</a>
+			<% } %>
+
+			<% if (it.nextArticle) { %>
+				<a href="/article/<%= it.nextArticle.id %>" class="nav-button">Next Article →</a>
+			<% } %>
+		</div>
+
+		
 		<div id="fullscreen-overlay" class="fullscreen-overlay">
 			<button class="close-btn" onclick="closeFullscreen()">X</button>
 			<img id="fullscreen-img" src="" alt="Fullscreen Image">

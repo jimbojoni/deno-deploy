@@ -15,21 +15,41 @@ eta.configure({ views: "./html" });
 export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
 
-	const { data: article, error } = await supabase
-		.from("articles")
-		.select("*")
-		.eq("id", articleId)
-		.single(); // Ensures only one article is returned
+  // Get current article
+  const { data: article, error } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("id", articleId)
+    .single();
 
-	if (error || !article) {
-		return c.text("Article not found", 404);
-	}
+  if (error || !article) {
+    return c.text("Article not found", 404);
+  }
 
-	console.log(JSON.stringify(article));
+  // Get previous and next articles based on created_at
+  const { data: prevArticle } = await supabase
+    .from("articles")
+    .select("id")
+    .lt("created_at", article.created_at)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
 
-	const html = await eta.renderFile("article.html", { article });
-	return c.html(html);
+  const { data: nextArticle } = await supabase
+    .from("articles")
+    .select("id")
+    .gt("created_at", article.created_at)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .single();
 
+  const html = await eta.renderFile("article.html", {
+    article,
+    prevArticle,
+    nextArticle,
+  });
+
+  return c.html(html);
 }
 
 export async function displayAllArticles(c) {
