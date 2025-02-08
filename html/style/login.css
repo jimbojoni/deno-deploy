@@ -1,6 +1,6 @@
 #login-form input {
   display: block;
-  width: 100%;
+  width: 50%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
@@ -9,7 +9,7 @@
 }
 
 #login-form button {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   margin-top: 10px;
   cursor: pointer;
