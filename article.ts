@@ -31,7 +31,7 @@ export async function displayArticle(c) {
     .from("articles")
     .select("id")
     .lt("created_at", article.created_at)
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: true })
     .limit(1)
     .single();
 
@@ -39,7 +39,7 @@ export async function displayArticle(c) {
     .from("articles")
     .select("id")
     .gt("created_at", article.created_at)
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
     .limit(1)
     .single();
 
