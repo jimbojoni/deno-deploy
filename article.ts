@@ -26,8 +26,15 @@ export async function displayArticle(c) {
     return c.text("Article not found", 404);
   }
 
-  // Convert Markdown to HTML
-  const articleContentHtml = marked(article.content);
+  const marked = new Marked({
+		breaks: true,
+		gfm: true,
+		mangle: false,
+		headerIds: false
+	});
+
+	// Convert Markdown to HTML
+	const articleContentHtml = marked.parse(article.content);
 
   // Fetch newer and older articles
   const { data: newerArticle } = await supabase
