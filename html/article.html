@@ -4,15 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= it.article.title %></title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    .article { border: 1px solid #ddd; padding: 20px; }
-  </style>
+	<link rel="stylesheet" href="/style/article.css">
 </head>
 <body>
   <div class="article">
     <h1><%= it.article.title %></h1>
     <p><%= it.article.content %></p>
+
+    <% if (it.article.images && it.article.images.length > 0) { %>
+      <div class="image-gallery">
+        <% it.article.images.forEach(image => { %>
+          <img src="<%= image %>" alt="Article Image">
+        <% }) %>
+      </div>
+    <% } %>
   </div>
 </body>
 </html>

@@ -110,5 +110,9 @@ app.get("/style/index.css", async (c) => {
   return c.text(css, 200, { "Content-Type": "text/css" });
 });
 
+app.get("/style/article.css", async (c) => {
+  const css = await Deno.readTextFile("./html/style/article.css");
+  return c.text(css, 200, { "Content-Type": "text/css" });
+});
 
 export default app;
