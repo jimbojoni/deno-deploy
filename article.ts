@@ -28,7 +28,7 @@ export async function displayArticle(c) {
 
 	// Convert Markdown to HTML
 	const articleContentHtml = marked.parse(article.content);
-
+	console.log(articleContentHtml);
   // Fetch newer and older articles
   const { data: newerArticle } = await supabase
     .from("articles")
