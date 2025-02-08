@@ -8,23 +8,22 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 eta.configure({ views: "./html" });
 export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
-  const { data: article, error } = await supabase
+
+	const { data: article, error } = await supabase
 		.from("articles")
 		.select("*")
 		.eq("id", articleId)
 		.single(); // Ensures only one article is returned
 
-	if (error || !articles) {
+	if (error || !article) {
 		return c.text("Article not found", 404);
 	}
-	console.log (JSON.stringify(article));
 
-  if (!article) {
-    return c.text("Article not found", 404);
-  }
+	console.log(JSON.stringify(article));
 
-  const html = await eta.renderFile("article.html", {article});
-  return c.html(html);
+	const html = await eta.renderFile("article.html", { article });
+	return c.html(html);
+
 }
 
 export async function displayAllArticles (c) {
