@@ -5,6 +5,7 @@ import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_e
 import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders, } from "./google_utils.ts";
 import { authMiddleware, authLogin, } from "./auth.ts";
 import { displayArticle, postArticle, displayAllArticles } from "./article.ts";
+import { walk } from "https://deno.land/std/fs/mod.ts";
 
 // Trigger new Deployment
 
@@ -100,24 +101,20 @@ app.get("/create-article", async (c) => {
 app.post("/create-article", postArticle);
 
 // Style CSS
-app.get("/style/site.css", async (c) => {
-  const css = await Deno.readTextFile("./html/style/site.css");
-  return c.text(css, 200, { "Content-Type": "text/css" });
-});
+const stylesPath = "./html/styles/";
 
-app.get("/style/drive.css", async (c) => {
-  const css = await Deno.readTextFile("./html/style/drive.css");
-  return c.text(css, 200, { "Content-Type": "text/css" });
-});
-
-app.get("/style/index.css", async (c) => {
-  const css = await Deno.readTextFile("./html/style/index.css");
-  return c.text(css, 200, { "Content-Type": "text/css" });
-});
-
-app.get("/style/article.css", async (c) => {
-  const css = await Deno.readTextFile("./html/style/article.css");
-  return c.text(css, 200, { "Content-Type": "text/css" });
-});
+for await (const entry of walk(stylesPath, { exts: [".css"], maxDepth: 1 })) {
+  if (entry.isFile) {
+    const fileName = entry.name;
+    app.get(`/style/${fileName}`, async (c) => {
+      try {
+        const css = await Deno.readTextFile(entry.path);
+        return c.text(css, 200, { "Content-Type": "text/css" });
+      } catch {
+        return c.text("CSS file not found", 404);
+      }
+    });
+  }
+}
 
 export default app;
