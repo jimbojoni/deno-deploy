@@ -26,17 +26,39 @@ export async function displayArticle(c) {
 
 }
 
-export async function displayAllArticles (c) {
-  // Fetch latest articles from Supabase
-  const { data: articles, error } = await supabase.from("articles").select("*");
+export async function displayAllArticles(c) {
+  const page = Number(c.req.query("page")) || 1; // Default to page 1
+  const limit = Number(c.req.query("limit")) || 5; // Default 5 articles per page
+
+  const start = (page - 1) * limit;
+  const end = start + limit - 1;
+
+  // Fetch paginated articles from Supabase, sorted by latest first
+  const { data: articles, error } = await supabase
+    .from("articles")
+    .select("*")
+    .order("created_at", { ascending: false }) // Sort newest to oldest
+    .range(start, end);
 
   if (error) {
     console.error(error);
     return c.text("Failed to load articles", 500);
   }
 
-  // Render `index.html` with updated articles
-  const html = await eta.renderFile("index.html", { articles });
+  // Get total count of articles (for pagination logic)
+  const { count } = await supabase
+    .from("articles")
+    .select("*", { count: "exact", head: true });
+
+  const totalPages = Math.ceil(count / limit);
+
+  const html = await eta.renderFile("index.html", {
+    articles,
+    currentPage: page,
+    nextPage: page < totalPages ? page + 1 : null,
+    prevPage: page > 1 ? page - 1 : null
+  });
+
   return c.html(html);
 }
 

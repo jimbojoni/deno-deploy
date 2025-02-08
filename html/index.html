@@ -5,10 +5,10 @@
   <title>News Articles</title>
 </head>
 <body>
-  <h1>Latest News</h1>
   <a href="/login">Login</a>
   <a href="/create-article">Create a New Article</a>
-  
+  <p></p>
+  <h1>Kabar Terbaru</h1>
   <ul>
     <% if (it.articles.length === 0) { %>
       <p>No articles yet.</p>
@@ -17,7 +17,7 @@
         <li>
           <h2><a href="/news/<%= article.id %>"><%= article.title %></a></h2>
           <p><%= article.content %></p>
-          <% if (article.images.length > 0) { %>
+          <% if (article.images && article.images.length > 0) { %>
             <p>Images:</p>
             <ul>
               <% article.images.forEach(image => { %>
@@ -29,6 +29,15 @@
       <% }) %>
     <% } %>
   </ul>
+
+  <!-- Pagination Links -->
+  <div>
+    <% if (it.prevPage) { %>
+      <a href="/?page=<%= it.prevPage %>&limit=5">Previous</a>
+    <% } %>
+    <% if (it.nextPage) { %>
+      <a href="/?page=<%= it.nextPage %>&limit=5">Next</a>
+    <% } %>
+  </div>
 </body>
-</html>
 </html>
