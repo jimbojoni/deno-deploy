@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 eta.configure({ views: "./html" });
 export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
-  const { data: articles, error } = await supabase
+  const { data: article, error } = await supabase
 		.from("articles")
 		.select("*")
 		.eq("id", articleId)
