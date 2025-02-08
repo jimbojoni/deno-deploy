@@ -20,19 +20,19 @@
       <% } else { %>
         <% it.articles.forEach(article => { %>
           <li class="article">
-            <h2>
-              <a href="/news/<%= article.id %>"><%= article.title %></a>
-            </h2>
-            <p><%= article.content %></p>
-            <% if (article.images && article.images.length > 0) { %>
-              <p class="text-sm">Images:</p>
-              <div class="image-gallery">
-                <% article.images.forEach(image => { %>
-                  <img src="<%= image %>" alt="Article Image">
-                <% }) %>
-              </div>
-            <% } %>
-          </li>
+						<div class="article-content">
+							<% if (article.images && article.images.length > 0) { %>
+								<img src="<%= article.images[0] %>" alt="Article Image">
+							<% } %>
+							<div>
+								<h2>
+									<a href="/news/<%= article.id %>"><%= article.title %></a>
+								</h2>
+								<p><%= article.content.length > 100 ? article.content.substring(0, 100) + "..." : article.content %></p>
+								<a href="/news/<%= article.id %>" class="read-more">Read more</a>
+							</div>
+						</div>
+					</li>
         <% }) %>
       <% } %>
     </ul>

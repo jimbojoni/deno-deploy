@@ -22,12 +22,10 @@ body {
 	text-decoration: underline;
 }
 .button {
-	background-color: #2563eb;
-	color: white;
-	padding: 8px 16px;
-	border-radius: 6px;
-	text-decoration: none;
-	display: inline-block;
+  background-color: #2563eb;
+  color: white !important; /* Ensures text stays visible */
+  font-weight: bold;
+  padding: 10px 16px;
 }
 .button:hover {
 	background-color: #1e40af;
