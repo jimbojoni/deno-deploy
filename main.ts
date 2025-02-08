@@ -5,7 +5,6 @@ import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_e
 import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders, } from "./google_utils.ts";
 import { authMiddleware, authLogin, } from "./auth.ts";
 import { displayArticle, postArticle, displayAllArticles } from "./article.ts";
-import { walk } from "https://deno.land/std/fs/mod.ts";
 
 // Trigger new Deployment
 
@@ -101,20 +100,17 @@ app.get("/create-article", async (c) => {
 app.post("/create-article", postArticle);
 
 // Style CSS
-const stylesPath = "./html/styles/";
+const styles = ["site", "drive", "index", "article"];
 
-for await (const entry of walk(stylesPath, { exts: [".css"], maxDepth: 1 })) {
-  if (entry.isFile) {
-    const fileName = entry.name;
-    app.get(`/style/${fileName}`, async (c) => {
-      try {
-        const css = await Deno.readTextFile(entry.path);
-        return c.text(css, 200, { "Content-Type": "text/css" });
-      } catch {
-        return c.text("CSS file not found", 404);
-      }
-    });
-  }
-}
+styles.forEach(style => {
+  app.get(`/style/${style}.css`, async (c) => {
+    try {
+      const css = await Deno.readTextFile(`./html/style/${style}.css`);
+      return c.text(css, 200, { "Content-Type": "text/css" });
+    } catch (error) {
+      return c.text("CSS file not found", 404);
+    }
+  });
+});
 
 export default app;
