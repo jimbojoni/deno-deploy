@@ -90,7 +90,7 @@ app.delete("/admin/drive/deleteAll", async (c) => {
 });
 
 // Article Section
-app.get("/news/:article_id", displayArticle);
+app.get("/article/:article_id", displayArticle);
 // Serve the article creation form
 app.get("/create-article", async (c) => {
   const html = await eta.renderFile("create-article.html");

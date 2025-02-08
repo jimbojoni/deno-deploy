@@ -83,3 +83,32 @@ ul {
 .pagination a:hover {
 	text-decoration: underline;
 }
+
+.article-content {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Spacing between image and text */
+}
+
+.article-content img {
+  width: 80px; /* Thumbnail size */
+  height: 80px; /* Keep it square */
+  object-fit: cover; /* Ensures it covers the area nicely */
+  border-radius: 6px;
+  flex-shrink: 0; /* Prevents shrinking */
+}
+
+.article-content div {
+  flex: 1; /* Allows text to take up remaining space */
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 8px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
