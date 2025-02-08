@@ -5,7 +5,7 @@ import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_e
 import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders, } from "./google_utils.ts";
 import { authMiddleware, authLogin, } from "./auth.ts";
 import { displayArticle, postArticle, displayAllArticles } from "./article.ts";
-import { serveStatic } from "hono/bun"; 
+import { serveStatic } from "hono/middleware.ts";
 
 // Trigger new Deployment
 
