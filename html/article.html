@@ -35,27 +35,6 @@
 				<div><%~ it.article.content %></div>
 			</p>
 		</div>	
-			<!--
-			<div class="article-left">
-				<% if (it.article.images && it.article.images.length > 0) { %>
-					<div class="image-gallery">
-						<button class="prev-btn">&lt;</button>
-						<div class="image-container">
-							<% it.article.images.forEach((image, index) => { %>
-								<img src="<%= image %>" alt="Article Image" class="gallery-image <%= index === 0 ? 'active' : '' %>" onclick="openFullscreen(this)">
-							<% }) %>
-						</div>
-						<button class="next-btn">&gt;</button>
-					</div>
-				<% } %>
-			</div>
-
-			<div class="article-right">
-				<h1><%= it.article.title %></h1>
-				<div><%~ it.article.content %></div>
-			</div>
-		</div>
-		-->
 		<div class="article-navigation">
 			<% if (it.newerArticle) { %>
 				<a href="/article/<%= it.newerArticle.id %>" class="article-nav-button newer">Artikel Baru</a>
