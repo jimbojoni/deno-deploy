@@ -190,3 +190,20 @@ tbody tr:nth-child(even) {
 tbody tr:hover {
 	background-color: #f1f1f1;
 }
+
+.article-right {
+  width: 100%;
+  overflow-x: auto; /* Enables horizontal scrolling if needed */
+}
+
+.article-right table {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+.article-right th, 
+.article-right td {
+  white-space: nowrap; /* Prevents text from wrapping */
+}
