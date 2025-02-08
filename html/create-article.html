@@ -6,17 +6,17 @@
 </head>
 <body>
   <h1>Create a New Article</h1>
-  <form action="/create-article" method="post">
-    <label>Title:</label>
-    <input type="text" name="title" required><br><br>
+	<form action="/create-article" method="post" enctype="multipart/form-data">
+		<label>Title:</label>
+		<input type="text" name="title" required><br><br>
 
-    <label>Content:</label>
-    <textarea name="content" required></textarea><br><br>
+		<label>Content:</label>
+		<textarea name="content" required style="filed-sizing: content; min-width: 300px; min-height: 100px;"></textarea><br><br>
 
-    <label>Image URLs (comma-separated):</label>
-    <input type="text" name="images"><br><br>
+		<label>Upload Image:</label>
+		<input type="file" name="image" accept="image/*"><br><br>
 
-    <button type="submit">Submit</button>
-  </form>
+		<button type="submit">Submit</button>
+	</form>
 </body>
 </html>

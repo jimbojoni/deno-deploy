@@ -5,7 +5,13 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const CLOUD_NAME = "dlcgyiaqo";
+const UPLOAD_PRESET = "deno-deploy";
+const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
 eta.configure({ views: "./html" });
+
+
 export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
 
@@ -62,7 +68,7 @@ export async function displayAllArticles(c) {
   return c.html(html);
 }
 
-export async function postArticle(c){
+/*export async function postArticle(c){
   const body = await c.req.parseBody();
   const { title, content, images } = body;
 
@@ -84,5 +90,51 @@ export async function postArticle(c){
   }
 
   // Redirect to success page
+  return c.redirect("/");
+}*/
+
+export async function postArticle(c) {
+  const body = await c.req.parseBody();
+  const { title, content } = body;
+  const image = body.image; // File upload
+
+  if (!title || !content) {
+    return c.text("Title and content are required!", 400);
+  }
+
+  let imageUrl = null;
+	const images = [];
+
+  // Handle image upload if provided
+  if (image && image instanceof File) {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const response = await fetch(UPLOAD_URL, {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.secure_url) {
+      imageUrl = result.secure_url;
+			images.push(imageUrl);
+    } else {
+      console.error("Cloudinary upload failed:", result);
+      return c.text("Failed to upload image", 500);
+    }
+  }
+
+  // Insert into Supabase
+  const { data, error } = await supabase
+    .from("articles")
+    .insert([{ title, content, images: images }]);
+
+  if (error) {
+    console.error(error);
+    return c.text("Failed to save article", 500);
+  }
+
   return c.redirect("/");
 }
