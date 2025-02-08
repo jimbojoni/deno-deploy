@@ -8,7 +8,7 @@ body {
 	max-width: 800px;
 	margin: 0 auto;
 }
-.header {
+.nav {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
@@ -19,12 +19,12 @@ body {
   gap: 16px; /* Space between Home & Create Article */
 }
 
-.header a {
+.nav a {
   text-decoration: none;
   color: #2563eb;
 }
 
-.header a:hover {
+.nav a:hover {
   text-decoration: underline;
 }
 
