@@ -4,18 +4,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: #fff;
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  gap: 16px;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-
-.article-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  //gap: 16px;
 }
 
 .image-gallery {
@@ -27,7 +16,7 @@
 }
 
 .image-container {
-  width: 300px;
+  width: 200px;
   overflow: hidden;
   position: relative;
   border-radius: 5px;
@@ -71,10 +60,6 @@
 
 .next-btn {
   right: 10px;
-}
-
-.article-right {
-  flex: 2;
 }
 
 .article h1 {
@@ -158,53 +143,43 @@
 }
 
 /* Base table styling */
-table {
-	width: 100%;
+.article table {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: block;
 	border-collapse: collapse; /* Merge borders for a cleaner look */
 	margin: 20px 0;
 	font-family: Arial, sans-serif;
 }
 
-/* Styling for table header */
-thead {
+.article th, 
+.article td {
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.article thead {
 	background-color: #f2f2f2;
 }
 
-thead th {
+.article thead th {
 	padding: 10px;
 	border: 1px solid #ddd;
 	text-align: left;
 }
 
 /* Styling for table body */
-tbody td {
+.article tbody td {
 	padding: 10px;
 	border: 1px solid #ddd;
 }
 
 /* Zebra stripes for rows */
-tbody tr:nth-child(even) {
+.article tbody tr:nth-child(even) {
 	background-color: #fafafa;
 }
 
 /* Hover effect for rows */
-tbody tr:hover {
+.article tbody tr:hover {
 	background-color: #f1f1f1;
-}
-
-.article-right {
-  width: 100%;
-  overflow-x: auto; /* Enables horizontal scrolling if needed */
-}
-
-.article-right table {
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  display: block;
-}
-
-.article-right th, 
-.article-right td {
-  white-space: nowrap; /* Prevents text from wrapping */
 }
