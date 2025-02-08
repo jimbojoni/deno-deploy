@@ -100,6 +100,11 @@ app.get("/create-article", async (c) => {
 app.post("/create-article", postArticle);
 
 // Style CSS
+app.get("/style/site.css", async (c) => {
+  const css = await Deno.readTextFile("./html/style/site.css");
+  return c.text(css, 200, { "Content-Type": "text/css" });
+});
+
 app.get("/style/drive.css", async (c) => {
   const css = await Deno.readTextFile("./html/style/drive.css");
   return c.text(css, 200, { "Content-Type": "text/css" });

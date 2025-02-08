@@ -3,20 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Create Article</title>
+	<link rel="stylesheet" href="/style/article.css">
+	<link rel="stylesheet" href="/style/site.css">
 </head>
 <body>
-  <h1>Create a New Article</h1>
-	<form action="/create-article" method="post" enctype="multipart/form-data">
-		<label>Title:</label>
-		<input type="text" name="title" required><br><br>
+	<div class="container">
+		<div class="header">
+			<a href="/">Home</a>
+			<a href="/login">Login</a>
+		</div>
+		<h1>Create a New Article</h1>
+		<form action="/create-article" method="post" enctype="multipart/form-data">
+			<label>Title:</label>
+			<input type="text" name="title" required><br><br>
 
-		<label>Content:</label>
-		<textarea name="content" required style="filed-sizing: content; min-width: 300px; min-height: 100px;"></textarea><br><br>
+			<label>Content:</label>
+			<textarea name="content" required style="filed-sizing: content; min-width: 300px; min-height: 100px;"></textarea><br><br>
 
-		<label>Upload Image:</label>
-		<input type="file" name="image" accept="image/*"><br><br>
+			<label>Upload Image:</label>
+			<input type="file" name="image" accept="image/*"><br><br>
 
-		<button type="submit">Submit</button>
-	</form>
+			<button type="submit">Submit</button>
+		</form>
+	</div>
 </body>
 </html>

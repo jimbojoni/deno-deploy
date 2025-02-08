@@ -5,19 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= it.article.title %></title>
 	<link rel="stylesheet" href="/style/article.css">
+	<link rel="stylesheet" href="/style/site.css">
 </head>
 <body>
-  <div class="article">
-    <h1><%= it.article.title %></h1>
-    <p><%= it.article.content %></p>
+	<div class="container">
+		<div class="header">
+			<a href="/create-article">Create a New Article</a>
+			<a href="/login">Login</a>
+		</div>
 
-    <% if (it.article.images && it.article.images.length > 0) { %>
-      <div class="image-gallery">
-        <% it.article.images.forEach(image => { %>
-          <img src="<%= image %>" alt="Article Image">
-        <% }) %>
-      </div>
-    <% } %>
-  </div>
+		<div class="article">
+			<h1><%= it.article.title %></h1>
+			<p><%= it.article.content %></p>
+
+			<% if (it.article.images && it.article.images.length > 0) { %>
+				<div class="image-gallery">
+					<% it.article.images.forEach(image => { %>
+						<img src="<%= image %>" alt="Article Image">
+					<% }) %>
+				</div>
+			<% } %>
+		</div>
+	</div>
 </body>
 </html>
