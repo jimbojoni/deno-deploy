@@ -147,3 +147,11 @@
 .article-nav-button:hover {
   background: #0056b3;
 }
+
+.newer {
+  margin-right: auto;
+}
+
+.older {
+  margin-left: auto;
+}
