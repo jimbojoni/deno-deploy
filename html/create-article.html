@@ -15,18 +15,20 @@
 			<a href="/login" class="login-link">Login</a>
 		</div>
 		<h1>Create a New Article</h1>
-		<form action="/create-article" method="post" enctype="multipart/form-data">
-			<label>Title:</label>
-			<input type="text" name="title" required><br><br>
+		<div class content>
+			<form action="/create-article" method="post" enctype="multipart/form-data">
+				<label>Title:</label>
+				<input type="text" name="title" required><br><br>
 
-			<label>Content:</label>
-			<textarea name="content" required style="filed-sizing: content; min-width: 300px; min-height: 100px;"></textarea><br><br>
+				<label>Content:</label>
+				<textarea name="content" required style="filed-sizing: content; min-width: 300px; min-height: 100px;"></textarea><br><br>
 
-			<label>Upload Image:</label>
-			<input type="file" name="image" accept="image/*"><br><br>
+				<label>Upload Image:</label>
+				<input type="file" name="image" accept="image/*"><br><br>
 
-			<button type="submit">Submit</button>
-		</form>
+				<button type="submit">Submit</button>
+			</form>
+		</div>	
 	</div>
 </body>
 </html>

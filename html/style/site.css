@@ -31,3 +31,14 @@ body {
 .login-link {
   margin-left: auto; /* Pushes login to the right */
 }
+
+.content { 
+  border: 1px solid #ddd; 
+  padding: 20px; 
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
