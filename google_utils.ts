@@ -2,16 +2,16 @@ import { google } from "https://esm.sh/googleapis@122.0.0";
 const { drive } = await googleAuth();
 
 export async function googleAuth() {
-  const credentialsBase64 = Deno.env.get("GOOGLE_API_CREDENTIALS");
+  const credentialsBase64 = Deno.env.get("GOOGLE_API_SIMOOL");
 
   if (!credentialsBase64) {
-    console.error("❌ Error: GOOGLE_API_CREDENTIALS environment variable is not set.");
+    console.error("❌ Error: GOOGLE_API environment variable is not set.");
     Deno.exit(1);
   }
 
   // Decode Base64 credentials
   const credentialsJson = JSON.parse(atob(credentialsBase64));
-  console.log("✅ GOOGLE_API_CREDENTIALS loaded successfully.");
+  console.log("✅ GOOGLE_API loaded successfully.");
 
   // Authenticate with Google
   const auth = new google.auth.GoogleAuth({
@@ -34,7 +34,7 @@ export async function googleAuth() {
 }
 
 async function getOrCreateBackupFolder(drive: any, folderName: string) {
-  const parentId = "17i6iD2eWSLatHgNwmMOaKt6gWkqqFraa"; // Your fixed parent folder ID
+  const parentId = "1vV2F88iWUoEkG177npCrpLTbcFXhVnIk"; // Your fixed parent folder ID
   //const folderName = folderName;
 
   try {
