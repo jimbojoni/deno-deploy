@@ -22,17 +22,19 @@
           <li class="article">
 						<div class="article-content">
 							<% if (article.images && article.images.length > 0) { %>
-								<img src="<%= article.images[0] %>" alt="Article Image">
+								<img src="<%= article.images[0] %>" alt="Article Image" class="thumbnail">
 							<% } %>
 							<div>
 								<h2>
 									<a href="/news/<%= article.id %>"><%= article.title %></a>
 								</h2>
 								<p>
-									<%= article.content.length > 100 
-										? article.content.substring(0, 100) + ' <a href="/news/' + article.id + '" class="read-more">Selengkapnya</a>' 
-										: article.content 
-									%>
+									<% if (article.content.length > 100) { %>
+										<%= article.content.substring(0, 100) %>...
+										<a href="/news/<%= article.id %>" class="read-more">Read more</a>
+									<% } else { %>
+										<%= article.content %>
+									<% } %>
 								</p>
 							</div>
 						</div>
