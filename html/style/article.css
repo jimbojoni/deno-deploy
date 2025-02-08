@@ -16,7 +16,7 @@
 }
 
 .image-container {
-  width: 50px;
+  width: 200px;
   overflow: hidden;
   position: relative;
   border-radius: 5px;
@@ -120,6 +120,7 @@
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+	clear: both;
 }
 
 .article-nav-button {
