@@ -26,18 +26,6 @@ body {
   text-decoration: underline;
 }
 
-.button {
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-  padding: 10px 16px;
-  border-radius: 6px;
-}
-
-.button:hover {
-  background: #1e40af;
-}
-
 h1 {
   font-size: 24px;
   font-weight: bold;
