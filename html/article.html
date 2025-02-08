@@ -18,17 +18,51 @@
 		</div>
 
 		<div class="article">
-			<h1><%= it.article.title %></h1>
-			<p><%= it.article.content %></p>
+			<div class="article-left">
+				<% if (it.article.images && it.article.images.length > 0) { %>
+					<div class="image-gallery">
+						<button class="prev-btn">&lt;</button>
+						<div class="image-container">
+							<% it.article.images.forEach((image, index) => { %>
+								<img src="<%= image %>" alt="Article Image" class="gallery-image <%= index === 0 ? 'active' : '' %>">
+							<% }) %>
+						</div>
+						<button class="next-btn">&gt;</button>
+					</div>
+				<% } %>
+			</div>
 
-			<% if (it.article.images && it.article.images.length > 0) { %>
-				<div class="image-gallery">
-					<% it.article.images.forEach(image => { %>
-						<img src="<%= image %>" alt="Article Image">
-					<% }) %>
-				</div>
-			<% } %>
+			<div class="article-right">
+				<h1><%= it.article.title %></h1>
+				<p><%= it.article.content %></p>
+			</div>
 		</div>
+		
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				const images = document.querySelectorAll(".gallery-image");
+				let currentIndex = 0;
+
+				function showImage(index) {
+					images.forEach((img, i) => {
+						img.classList.toggle("active", i === index);
+					});
+				}
+
+				document.querySelector(".prev-btn")?.addEventListener("click", function () {
+					currentIndex = (currentIndex - 1 + images.length) % images.length;
+					showImage(currentIndex);
+				});
+
+				document.querySelector(".next-btn")?.addEventListener("click", function () {
+					currentIndex = (currentIndex + 1) % images.length;
+					showImage(currentIndex);
+				});
+
+				showImage(currentIndex);
+			});
+		</script>
+
 	</div>
 </body>
 </html>
