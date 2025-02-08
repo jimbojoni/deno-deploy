@@ -1,5 +1,6 @@
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { marked } from "https://esm.sh/marked";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -11,8 +12,51 @@ const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
 eta.configure({ views: "./html" });
 
-
 export async function displayArticle(c) {
+  const articleId = c.req.param("article_id");
+
+  // Fetch the article
+  const { data: article, error } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("id", articleId)
+    .single();
+
+  if (error || !article) {
+    return c.text("Article not found", 404);
+  }
+
+  // Convert Markdown to HTML
+  const articleContentHtml = marked(article.content);
+
+  // Fetch newer and older articles
+  const { data: newerArticle } = await supabase
+    .from("articles")
+    .select("id")
+    .gt("created_at", article.created_at)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .single();
+
+  const { data: olderArticle } = await supabase
+    .from("articles")
+    .select("id")
+    .lt("created_at", article.created_at)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  // Render Eta template
+  const html = await eta.renderFile("article.html", {
+    article: { ...article, content: articleContentHtml }, // Pass HTML content
+    newerArticle,
+    olderArticle,
+  });
+
+  return c.html(html);
+}
+
+/*export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
 
   // Fetch the current article
@@ -51,7 +95,7 @@ export async function displayArticle(c) {
   });
 
   return c.html(html);
-}
+}*/
 
 export async function displayAllArticles(c) {
   const page = Number(c.req.query("page")) || 1; // Default to page 1

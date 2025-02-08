@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Article</title>
+	<!-- TUI Editor CSS -->
+	<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
 	<link rel="stylesheet" href="/style/article.css">
 	<link rel="stylesheet" href="/style/site.css">
 </head>
@@ -22,14 +24,20 @@
 				<input type="text" name="title" required><br><br>
 
 				<label>Content:</label>
-				<textarea name="content" required style="filed-sizing: content; min-width: 300px; min-height: 100px;"></textarea><br><br>
+				<div id="editor"></div>
+				<textarea name="content" id="content-input" style="display: none;" required></textarea> <!-- Hidden input to store content -->
 
+				<br><br>
 				<label>Upload Image:</label>
 				<input type="file" name="image" accept="image/*"><br><br>
 
 				<button type="submit">Submit</button>
 			</form>
-		</div>	
+
+		</div>
+		<!-- TUI Editor JS -->
+		<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+		<script src="/js/create-article.js" defer></script>
 	</div>
 </body>
 </html>
