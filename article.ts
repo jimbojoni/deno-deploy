@@ -160,9 +160,10 @@ export async function displayAllArticles(c) {
 }*/
 
 export async function postArticle(c) {
-  const body = await c.req.parseBody();
-  const { title, content } = body;
-  const images = body.getAll('images'); // Get all uploaded files
+  const formData = await c.req.formData();
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+  const images = formData.getAll("images") as File[]; // Get all uploaded files
 
   // Validate required fields
   if (!title || !content) {
@@ -184,13 +185,13 @@ export async function postArticle(c) {
   try {
     // Upload all images in parallel
     const uploadPromises = images.map(async (image) => {
-      const formData = new FormData();
-      formData.append("file", image);
-      formData.append("upload_preset", UPLOAD_PRESET);
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", image);
+      uploadFormData.append("upload_preset", UPLOAD_PRESET);
 
       const response = await fetch(UPLOAD_URL, {
         method: "POST",
-        body: formData,
+        body: uploadFormData,
       });
 
       if (!response.ok) {
