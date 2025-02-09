@@ -15,16 +15,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (response.ok && data.loggedIn) {
         window.location.href = "/admin";
-        return;
+        return; // Stop further execution
       } else {
-        localStorage.removeItem("jwt_token");
+        localStorage.removeItem("jwt_token"); // Remove invalid token
       }
     } catch (error) {
       console.error("Token validation error:", error);
     }
   }
 
-  // Attach event listener only if not redirected
+  // Show login form only if not redirected
+  document.getElementById("login-container").style.display = "block";
+
   document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -43,10 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (response.ok) {
         localStorage.setItem("jwt_token", data.token);
-        document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
-        setTimeout(() => {
-          window.location.href = "/admin";
-        }, 1000);
+        window.location.href = "/admin"; // Redirect immediately
       } else {
         document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
       }
