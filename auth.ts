@@ -40,25 +40,24 @@ export async function authMiddleware(c: any, next: any) {
 }
 
 export async function authLogin(c) {
-  const authHeader = c.req.header("Authorization");
+  if (c.req.method === "GET") {
+    // Check if user is already logged in (JWT in cookies)
+    const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
 
-  if (authHeader) {
-    // Check if user is already logged in
-    const token = authHeader.replace("Bearer ", "");
-
-    try {
-      const key = await importKey(["verify"]);
-      const payload = await verify(token, key);
-      
-      // Redirect authenticated users to /admin
-      return c.redirect("/admin");
-    } catch {
-      // If token is invalid or expired, show login page
-      return c.redirect("/login");
+    if (jwt) {
+      try {
+        const key = await importKey(["verify"]);
+        await verify(jwt, key);
+        return c.redirect("/admin"); // If valid, redirect to admin
+      } catch {
+        return c.redirect("/login"); // Invalid token, show login page
+      }
     }
+
+    return c.redirect("/login"); // No token, show login page
   }
 
-  // Normal login process
+  // Handle POST (Login attempt)
   const { username, password } = await c.req.json();
   if (!SECRET_KEY) return c.json({ error: "Server misconfiguration" }, 500);
 
@@ -80,9 +79,8 @@ export async function authLogin(c) {
     // Set the JWT as a cookie
     c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
 
-    // Redirect to /admin after successful login
-    return c.redirect("/admin");
+    return c.redirect("/admin"); // Redirect after successful login
   }
 
-  return c.redirect("/login");
+  return c.redirect("/login"); // Invalid credentials
 }
