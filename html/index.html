@@ -29,10 +29,10 @@
 								<img src="<%= article.images[0] %>" alt="Article Image" class="thumbnail">
 							<% } %>
 							<div>
-								<div class="article-title-container">
-									<p class="article-title">
+								<div class="article-title">
+									<h2>
 										<a href="/article/<%= article.id %>"><%= article.title %></a>
-									</p>
+									</h2>
 									<p><%= new Date(article.created_at).toLocaleDateString() %></p>
 								</div>
 								<p>

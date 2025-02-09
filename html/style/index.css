@@ -15,20 +15,21 @@ ul {
 	border-radius: 8px;
 	margin-bottom: 16px;
 }
-.article-title {
+.article h2 {
 	font-size: 18px;
 	font-weight: bold;
 	margin-bottom: 8px;
 }
-.article-title a {
+.article h2 a {
 	text-decoration: none;
 	color: #2563eb;
 }
-.article-title a:hover {
+.article h2 a:hover {
 	text-decoration: underline;
 }
 .article p {
 	color: #374151;
+	margin: 5px;
 }
 
 .article-content {
@@ -49,14 +50,16 @@ ul {
   flex: 1; /* Allows text to take up remaining space */
 }
 
-.article-title-container {
+.article-title {
 	display: flex;
 	margin-right: 16px;
 	justify-content: space-between;
 }
 
-.article-title-container p {
+.article-title p {
+	font-size: 0.8em;
 	font-style: italic;
+	color: #2563eb;
 }
 
 .read-more {
