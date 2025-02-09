@@ -11,3 +11,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.querySelector("#content-input").value = editor.getMarkdown();
 	});
 });
+
+function validateFiles(input) {
+  if (input.files.length > 5) {
+    alert("Maximum 5 images allowed");
+    input.value = ""; // Clear selected files
+  }
+}

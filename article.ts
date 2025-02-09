@@ -162,47 +162,67 @@ export async function displayAllArticles(c) {
 export async function postArticle(c) {
   const body = await c.req.parseBody();
   const { title, content } = body;
-  const files = c.req.raw.files?.images; // Multiple file support
+  const images = body.getAll('images'); // Get all uploaded files
 
+  // Validate required fields
   if (!title || !content) {
     return c.text("Title and content are required!", 400);
   }
 
-  const images = [];
+  // Validate image count
+  if (images.length > 5) {
+    return c.text("Maximum 5 images allowed", 400);
+  }
 
-  if (files) {
-    const uploadPromises = [];
+  // Validate each file is a proper File instance
+  for (const image of images) {
+    if (!(image instanceof File)) {
+      return c.text("Invalid image file format", 400);
+    }
+  }
 
-    // Convert to array if only one file is uploaded
-    const fileArray = Array.isArray(files) ? files : [files];
-
-    for (const file of fileArray.slice(0, 5)) { // Limit to 5 images
+  try {
+    // Upload all images in parallel
+    const uploadPromises = images.map(async (image) => {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", image);
       formData.append("upload_preset", UPLOAD_PRESET);
 
-      uploadPromises.push(
-        fetch(UPLOAD_URL, { method: "POST", body: formData })
-          .then(res => res.json())
-          .then(data => {
-            if (data.secure_url) images.push(data.secure_url);
-          })
-          .catch(err => console.error("Upload failed:", err))
-      );
+      const response = await fetch(UPLOAD_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Cloudinary upload failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (!result.secure_url) {
+        throw new Error("Cloudinary didn't return URL");
+      }
+      return result.secure_url;
+    });
+
+    const imagesUrls = await Promise.all(uploadPromises);
+
+    // Save to database
+    const { error } = await supabase
+      .from("articles")
+      .insert([{ 
+        title, 
+        content, 
+        images: imagesUrls 
+      }]);
+
+    if (error) {
+      console.error(error);
+      return c.text("Failed to save article", 500);
     }
 
-    await Promise.all(uploadPromises);
+    return c.redirect("/");
+  } catch (error) {
+    console.error("Image upload failed:", error);
+    return c.text("Failed to upload one or more images", 500);
   }
-
-  // Insert into Supabase
-  const { data, error } = await supabase
-    .from("articles")
-    .insert([{ title, content, images }]);
-
-  if (error) {
-    console.error(error);
-    return c.text("Failed to save article", 500);
-  }
-
-  return c.redirect("/");
 }

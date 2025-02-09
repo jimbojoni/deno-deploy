@@ -30,13 +30,19 @@
 				<div id="editor"></div>
 				<textarea name="content" id="content-input" hidden></textarea>
 				<br><br>
-				<label>Upload Image:</label>
-				<input type="file" name="images" accept="image/*" multiple>
+
+				<!-- Updated file input for multiple images -->
+				<label>Upload Images (max 5):</label>
+				<input 
+					type="file" 
+					name="images" 
+					accept="image/*" 
+					multiple
+					onchange="validateFiles(this)"
+				><br><br>
+				
 				<button type="submit">Submit</button>
 			</form>
-			<div id="tui-editor-container"></div>
-			<div id="image-preview"></div>
-			<button type="button" id="edit-image-btn">Edit Selected Image</button>
 		</div>
 		<!-- TUI Editor JS -->
 		<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
