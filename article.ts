@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { marked } from "https://esm.sh/marked";
 //import DOMPurify from "https://esm.sh/dompurify@3.0.8";
 import * as ammonia from "https://deno.land/x/ammonia@0.3.1/mod.ts"
+import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -104,7 +105,7 @@ export async function displayAllArticles(c) {
 
 export async function postArticle(c) {
   // Attempt to retrieve the JWT from cookies
-	const jwtToken = c.req.cookie().get("jwt")?.value; // <-- Fix here
+	const jwtToken = getCookie(c, "jwt"); // <-- Correct usage
   let author = "anonymous";
 
   if (jwtToken) {
