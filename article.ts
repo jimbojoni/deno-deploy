@@ -114,7 +114,7 @@ export async function postArticle(c) {
       // Use the imported key function
       const key = await importKey(["verify"]);
       const payload = await verify(jwtToken, key);
-      author = payload.name || payload.user || "anonymous";
+      author = payload.name || payload.user || "Anonymous";
     } catch (error) {
       console.error("JWT verification failed:", error);
     }
