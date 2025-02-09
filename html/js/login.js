@@ -1,45 +1,58 @@
-document.addEventListener("DOMContentLoaded", () => {
-	// Check if user is already logged in
-	const token = localStorage.getItem("jwt_token");
-	if (token) {
-		window.location.href = "/admin"; // Redirect if token exists
-		return;
-	}
+document.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("jwt_token");
 
-	// Add login form event listener
-	document.getElementById("login-form").addEventListener("submit", async (e) => {
-		e.preventDefault();
+  if (token) {
+    try {
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-		// Get form values
-		const username = document.getElementById("username").value;
-		const password = document.getElementById("password").value;
+      const data = await response.json();
 
-		// Clear previous messages
-		document.getElementById("message").innerText = "";
+      if (response.ok && data.loggedIn) {
+        window.location.href = "/admin";
+        return;
+      } else {
+        localStorage.removeItem("jwt_token");
+      }
+    } catch (error) {
+      console.error("Token validation error:", error);
+    }
+  }
 
-		try {
-			// Send login request
-			const response = await fetch("/login", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ username, password })
-			});
+  // Attach event listener only if not redirected
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-			// Handle response
-			if (response.ok) {
-				const data = await response.json();
-				localStorage.setItem("jwt_token", data.token);
-				document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
-				setTimeout(() => {
-					window.location.href = "/admin";
-				}, 1000);
-			} else {
-				const data = await response.json();
-				document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
-			}
-		} catch (error) {
-			document.getElementById("message").innerText = "❌ An error occurred. Please try again.";
-			console.error("Login error:", error);
-		}
-	});
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    document.getElementById("message").innerText = "";
+
+    try {
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("jwt_token", data.token);
+        document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 1000);
+      } else {
+        document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
+      }
+    } catch (error) {
+      document.getElementById("message").innerText = "❌ An error occurred. Please try again.";
+      console.error("Login error:", error);
+    }
+  });
 });

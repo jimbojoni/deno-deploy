@@ -1,4 +1,5 @@
 import { create, getNumericDate, verify } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
+//import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
 
 const SECRET_KEY = Deno.env.get("SECRET_KEY") || "";
 if (SECRET_KEY.length < 32) {
@@ -39,6 +40,22 @@ export async function authMiddleware(c: any, next: any) {
 }
 
 export async function authLogin(c) {
+  const authHeader = c.req.header("Authorization");
+
+  if (authHeader) {
+    // Check if user is already logged in
+    const token = authHeader.replace("Bearer ", "");
+
+    try {
+      const key = await importKey(["verify"]);
+      const payload = await verify(token, key);
+      return c.json({ loggedIn: true, user: payload });
+    } catch {
+      return c.json({ loggedIn: false, error: "Invalid or expired token" }, 401);
+    }
+  }
+
+  // Normal login process
   const { username, password } = await c.req.json();
   if (!SECRET_KEY) return c.json({ error: "Server misconfiguration" }, 500);
 
@@ -47,7 +64,7 @@ export async function authLogin(c) {
     { username: "writer", password: "My*Writer*Password*001", name: "Adam Writer", role: "content-creator" },
   ];
 
-  const user = users.find(u => u.username === username && u.password === password);
+  const user = users.find((u) => u.username === username && u.password === password);
 
   if (user) {
     const key = await importKey(["sign"]);
