@@ -33,35 +33,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to open TUI Image Editor
   function openEditor(index, file) {
-    const reader = new FileReader();
-    reader.onload = function () {
-      const container = document.createElement("div");
-      container.id = "tui-editor-container";
-      document.body.appendChild(container);
+		const reader = new FileReader();
+		reader.onload = function () {
+			const container = document.createElement("div");
+			container.id = "tui-editor-container";
+			document.body.appendChild(container);
 
-      const editorInstance = new tui.ImageEditor("#tui-editor-container", {
-        includeUI: { theme: {} },
-        cssMaxWidth: 700,
-        cssMaxHeight: 500,
-        usageStatistics: false
-      });
+			const editorInstance = new tui.ImageEditor(container, {
+				includeUI: {
+					loadImage: {
+						path: reader.result,
+						name: file.name
+					},
+					theme: {}, // Required, even if empty
+					menu: ['crop', 'flip', 'rotate', 'draw', 'shape', 'icon', 'text', 'mask', 'filter'],
+					initMenu: 'filter',
+					uiSize: {
+						width: '700px',
+						height: '500px'
+					},
+					menuBarPosition: 'bottom'
+				},
+				cssMaxWidth: 700,
+				cssMaxHeight: 500,
+				usageStatistics: false
+			});
 
-      editorInstance.loadImageFromURL(reader.result, file.name).then(() => {
-        const saveBtn = document.createElement("button");
-        saveBtn.textContent = "Save Image";
-        saveBtn.onclick = () => {
-          editorInstance.toDataURL().then((dataUrl) => {
-            selectedFiles[index] = dataURLtoFile(dataUrl, file.name);
-            previewContainer.children[index].src = dataUrl;
-            editorInstance.destroy();
-            container.remove();
-          });
-        };
-        container.appendChild(saveBtn);
-      });
-    };
-    reader.readAsDataURL(file);
-  }
+			const saveBtn = document.createElement("button");
+			saveBtn.textContent = "Save Image";
+			saveBtn.onclick = () => {
+				editorInstance.toDataURL().then((dataUrl) => {
+					selectedFiles[index] = dataURLtoFile(dataUrl, file.name);
+					previewContainer.children[index].src = dataUrl;
+					editorInstance.destroy();
+					container.remove();
+				});
+			};
+			container.appendChild(saveBtn);
+		};
+		reader.readAsDataURL(file);
+	}
 
   // Convert data URL to file
   function dataURLtoFile(dataUrl, filename) {
