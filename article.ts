@@ -104,20 +104,16 @@ export async function displayAllArticles(c) {
 
 export async function postArticle(c) {
   // Attempt to retrieve the JWT from cookies
-  const jwtToken = c.req.cookie("jwt");
-  let author = "anonymous"; // Default author
+	const jwtToken = c.req.cookie().get("jwt")?.value; // <-- Fix here
+  let author = "anonymous";
 
   if (jwtToken) {
     try {
-      // Verify the token using the appropriate key.
-      // Note: Ensure the key here matches the one used in your authLogin route.
       const key = await importKey(["verify"]);
       const payload = await verify(jwtToken, key);
-      // If token is valid, use the provided name or username.
       author = payload.name || payload.user || "anonymous";
     } catch (error) {
       console.error("JWT verification failed:", error);
-      // If verification fails, leave author as "anonymous"
     }
   }
 
@@ -141,11 +137,13 @@ export async function postArticle(c) {
   }
 
   // Validate each file is a proper File instance
-  for (const image of images) {
-    if (!(image instanceof File)) {
-      return c.text("Invalid image file format", 400);
-    }
-  }
+  if (images.length > 0) {
+		for (const image of images) {
+			if (!(image instanceof File)) {
+				return c.text("Invalid image file format", 400);
+			}
+		}
+	}
 
   try {
     // Upload all images in parallel
@@ -195,5 +193,3 @@ export async function postArticle(c) {
     return c.text("Failed to upload one or more images", 500);
   }
 }
-
-//trigger new deployment
