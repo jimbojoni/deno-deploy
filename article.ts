@@ -123,7 +123,8 @@ export async function postArticle(c) {
   const title = formData.get("title") as string;
   // Sanitize the markdown content before storing it
   const content = ammonia.clean(formData.get("content") as string);
-  const images = formData.getAll("images") as File[]; // Get all uploaded files
+  //const images = formData.getAll("images") as File[]; // Get all uploaded files
+	const imagesRaw = formData.getAll("images");
 	const category = "";
 	const tags = [];
 
@@ -131,20 +132,21 @@ export async function postArticle(c) {
   if (!title || !content) {
     return c.text("Title and content are required!", 400);
   }
+	
+	// First, validate each item:
+	// If the item is a non-empty string and not a File, then it's an error.
+	for (const image of imagesRaw) {
+		if (typeof image === "string" && image.trim() !== "") {
+			return c.text("Invalid image file format", 400);
+		}
+	}
 
+	// Now filter out empty values (or non-File values)
+	const images = imagesRaw.filter((item): item is File => item instanceof File);
   // Validate image count
   if (images.length > 5) {
     return c.text("Maximum 5 images allowed", 400);
   }
-
-  // Validate each file is a proper File instance
-  if (images.length > 0) {
-		for (const image of images) {
-			if (!(image instanceof File)) {
-				return c.text("Invalid image file format", 400);
-			}
-		}
-	}
 
   try {
     // Upload all images in parallel
