@@ -19,16 +19,62 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	showImage(currentIndex);
-});
 
-function openFullscreen(img) {
+	// Fullscreen functionality
 	const overlay = document.getElementById("fullscreen-overlay");
 	const fullscreenImg = document.getElementById("fullscreen-img");
+	const fullscreenPrevBtn = document.getElementById("fullscreen-prev");
+	const fullscreenNextBtn = document.getElementById("fullscreen-next");
 
-	fullscreenImg.src = img.src;
-	overlay.style.display = "flex";
-}
+	function openFullscreen(img) {
+		currentIndex = [...images].indexOf(img); // Find index of clicked image
+		updateFullscreenImage();
+		overlay.style.display = "flex";
+	}
 
-function closeFullscreen() {
-	document.getElementById("fullscreen-overlay").style.display = "none";
-}
+	function closeFullscreen() {
+		overlay.style.display = "none";
+	}
+
+	function updateFullscreenImage() {
+		fullscreenImg.src = images[currentIndex].src;
+	}
+
+	fullscreenPrevBtn.addEventListener("click", function () {
+		currentIndex = (currentIndex - 1 + images.length) % images.length;
+		updateFullscreenImage();
+	});
+
+	fullscreenNextBtn.addEventListener("click", function () {
+		currentIndex = (currentIndex + 1) % images.length;
+		updateFullscreenImage();
+	});
+
+	// Touch swipe functionality
+	let touchStartX = 0;
+	let touchEndX = 0;
+
+	overlay.addEventListener("touchstart", (e) => {
+		touchStartX = e.touches[0].clientX;
+	});
+
+	overlay.addEventListener("touchend", (e) => {
+		touchEndX = e.changedTouches[0].clientX;
+		handleSwipe();
+	});
+
+	function handleSwipe() {
+		const swipeThreshold = 50; // Minimum swipe distance to register
+		if (touchStartX - touchEndX > swipeThreshold) {
+			// Swipe left (next image)
+			currentIndex = (currentIndex + 1) % images.length;
+		} else if (touchEndX - touchStartX > swipeThreshold) {
+			// Swipe right (previous image)
+			currentIndex = (currentIndex - 1 + images.length) % images.length;
+		}
+		updateFullscreenImage();
+	}
+
+	window.openFullscreen = openFullscreen;
+	window.closeFullscreen = closeFullscreen;
+});

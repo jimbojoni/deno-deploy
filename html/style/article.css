@@ -111,6 +111,26 @@
   border-radius: 5px;
 }
 
+.fullscreen-image-nav-btn {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(255, 255, 255, 0.5);
+	border: none;
+	color: black;
+	font-size: 24px;
+	padding: 10px;
+	cursor: pointer;
+}
+
+#fullscreen-prev {
+	left: 10px;
+}
+
+#fullscreen-next {
+	right: 10px;
+}
+
 /* Responsive Styling */
 @media (max-width: 768px) {
   .article {
