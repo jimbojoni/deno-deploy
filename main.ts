@@ -93,10 +93,7 @@ app.delete("/admin/drive/deleteAll", async (c) => {
 // Article Section
 app.get("/article/:article_id", displayArticle);
 // Serve the article creation form
-app.get("/create-article", async (c) => {
-  const html = await eta.renderFile("create-article.html");
-  return c.html(html);
-});
+app.get("/create-article", renderCreateArticle);
 // Handle article submission
 app.post("/create-article", postArticle);
 
