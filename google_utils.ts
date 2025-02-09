@@ -11,7 +11,7 @@ export async function googleAuth() {
 
   // Decode Base64 credentials
   const credentialsJson = JSON.parse(atob(credentialsBase64));
-  console.log("✅ GOOGLE_API loaded successfully.");
+  //console.log("✅ GOOGLE_API loaded successfully.");
 
   // Authenticate with Google
   const auth = new google.auth.GoogleAuth({

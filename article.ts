@@ -33,7 +33,7 @@ export async function displayArticle(c) {
 	const articleContentHtml = ammonia.clean(marked.parse(article.content));
 	//const articleContentHtml = DOMPurify.sanitize(marked.parse(article.content));
 	//const articleContentHtml = article.content;
-	console.log(articleContentHtml);
+	//console.log(articleContentHtml);
   // Fetch newer and older articles
   const { data: newerArticle } = await supabase
     .from("articles")
@@ -103,12 +103,32 @@ export async function displayAllArticles(c) {
 }
 
 export async function postArticle(c) {
+  // Attempt to retrieve the JWT from cookies
+  const jwtToken = c.req.cookie("jwt");
+  let author = "anonymous"; // Default author
+
+  if (jwtToken) {
+    try {
+      // Verify the token using the appropriate key.
+      // Note: Ensure the key here matches the one used in your authLogin route.
+      const key = await importKey(["verify"]);
+      const payload = await verify(jwtToken, key);
+      // If token is valid, use the provided name or username.
+      author = payload.name || payload.user || "anonymous";
+    } catch (error) {
+      console.error("JWT verification failed:", error);
+      // If verification fails, leave author as "anonymous"
+    }
+  }
+
+  // Parse form data from the article submission form
   const formData = await c.req.formData();
   const title = formData.get("title") as string;
-  //const content = formData.get("content") as string;
-	//const content = DOMPurify.sanitize(formData.get("content") as string);
-	const content = ammonia.clean(formData.get("content") as string);
+  // Sanitize the markdown content before storing it
+  const content = ammonia.clean(formData.get("content") as string);
   const images = formData.getAll("images") as File[]; // Get all uploaded files
+	const category = "";
+	const tags = [];
 
   // Validate required fields
   if (!title || !content) {
@@ -152,13 +172,16 @@ export async function postArticle(c) {
 
     const imagesUrls = await Promise.all(uploadPromises);
 
-    // Save to database
+    // Save to the database, including the "author" field
     const { error } = await supabase
       .from("articles")
       .insert([{ 
         title, 
         content, 
-        images: imagesUrls 
+        images: imagesUrls,
+        author, // Will be either the verified user name or "anonymous"
+				category,
+				tags,
       }]);
 
     if (error) {

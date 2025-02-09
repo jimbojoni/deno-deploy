@@ -39,20 +39,27 @@ export async function authMiddleware(c: any, next: any) {
 }
 
 export async function authLogin(c) {
-	const { username, password } = await c.req.json();
-	if (!SECRET_KEY) return c.json({ error: "Server misconfiguration" }, 500);
+  const { username, password } = await c.req.json();
+  if (!SECRET_KEY) return c.json({ error: "Server misconfiguration" }, 500);
 
-	if (username === "admin" && password === "password") {
-		const key = await importKey(["sign"]);
-		const token = await create(
-			{ alg: "HS256", typ: "JWT" },
-			{ user: "admin", exp: getNumericDate(3600) },
-			key
-		);
+  const users = [
+    { username: "admin", password: "My*Admin*Password*000", name: "Just Admin", role: "administrator" },
+    { username: "writer", password: "My*Writer*Password*001", name: "Adam Writer", role: "content-creator" },
+  ];
 
-		c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
-		return c.json({ message: "Login successful", token });
-	}
+  const user = users.find(u => u.username === username && u.password === password);
 
-	return c.json({ error: "Invalid credentials" }, 401);
+  if (user) {
+    const key = await importKey(["sign"]);
+    const token = await create(
+      { alg: "HS256", typ: "JWT" },
+      { user: user.username, name: user.name, role: user.role, exp: getNumericDate(3600) },
+      key
+    );
+
+    c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
+    return c.json({ message: "Login successful", token });
+  }
+
+  return c.json({ error: "Invalid credentials" }, 401);
 }
