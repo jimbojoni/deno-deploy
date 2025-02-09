@@ -162,24 +162,47 @@ export async function displayAllArticles(c) {
 export async function postArticle(c) {
   const body = await c.req.parseBody();
   const { title, content } = body;
-  const files = c.req.files('images'); // Get multiple files
+  const files = c.req.raw.files?.images; // Multiple file support
 
-  if (!title || !content) return c.text("Title and content are required!", 400);
+  if (!title || !content) {
+    return c.text("Title and content are required!", 400);
+  }
 
   const images = [];
 
-  for (let file of files.slice(0, 5)) {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
+  if (files) {
+    const uploadPromises = [];
 
-    const response = await fetch(UPLOAD_URL, { method: "POST", body: formData });
-    const result = await response.json();
-    if (result.secure_url) images.push(result.secure_url);
+    // Convert to array if only one file is uploaded
+    const fileArray = Array.isArray(files) ? files : [files];
+
+    for (const file of fileArray.slice(0, 5)) { // Limit to 5 images
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", UPLOAD_PRESET);
+
+      uploadPromises.push(
+        fetch(UPLOAD_URL, { method: "POST", body: formData })
+          .then(res => res.json())
+          .then(data => {
+            if (data.secure_url) images.push(data.secure_url);
+          })
+          .catch(err => console.error("Upload failed:", err))
+      );
+    }
+
+    await Promise.all(uploadPromises);
   }
 
-  const { error } = await supabase.from("articles").insert([{ title, content, images }]);
-  if (error) return c.text("Failed to save article", 500);
+  // Insert into Supabase
+  const { data, error } = await supabase
+    .from("articles")
+    .insert([{ title, content, images }]);
+
+  if (error) {
+    console.error(error);
+    return c.text("Failed to save article", 500);
+  }
 
   return c.redirect("/");
 }
