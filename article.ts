@@ -1,7 +1,8 @@
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { marked } from "https://esm.sh/marked";
-import DOMPurify from "https://esm.sh/dompurify@3.0.8";
+//import DOMPurify from "https://esm.sh/dompurify@3.0.8";
+import * as ammonia from "https://deno.land/x/ammonia@0.3.1/mod.ts"
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -28,7 +29,8 @@ export async function displayArticle(c) {
   }
 
 	// Convert Markdown to HTML
-	const articleContentHtml = DOMPurify.sanitize(marked.parse(article.content));
+	const articleContentHtml = ammonia.clean(marked.parse(article.content));
+	//const articleContentHtml = DOMPurify.sanitize(marked.parse(article.content));
 	//const articleContentHtml = article.content;
 	console.log(articleContentHtml);
   // Fetch newer and older articles
@@ -86,7 +88,7 @@ export async function displayAllArticles(c) {
 	
 	const sanitizedArticles = articles.map(article => ({
 		...article,
-		content: DOMPurify.sanitize(marked.parse(article.content))
+		content: ammonia.clean(marked.parse(article.content))
 	}));
 
   const html = await eta.renderFile("index.html", {
@@ -103,7 +105,8 @@ export async function postArticle(c) {
   const formData = await c.req.formData();
   const title = formData.get("title") as string;
   //const content = formData.get("content") as string;
-	const content = DOMPurify.sanitize(formData.get("content") as string);
+	//const content = DOMPurify.sanitize(formData.get("content") as string);
+	const content = ammonia.clean(formData.get("content") as string);
   const images = formData.getAll("images") as File[]; // Get all uploaded files
 
   // Validate required fields
