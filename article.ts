@@ -1,6 +1,7 @@
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { marked } from "https://esm.sh/marked";
+import DOMPurify from "https://esm.sh/dompurify@3.0.8";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -27,7 +28,7 @@ export async function displayArticle(c) {
   }
 
 	// Convert Markdown to HTML
-	const articleContentHtml = marked.parse(article.content);
+	const articleContentHtml = DOMPurify.sanitize(marked.parse(article.content));
 	//const articleContentHtml = article.content;
 	console.log(articleContentHtml);
   // Fetch newer and older articles
@@ -57,47 +58,6 @@ export async function displayArticle(c) {
   return c.html(html);
 }
 
-/*export async function displayArticle(c) {
-  const articleId = c.req.param("article_id");
-
-  // Fetch the current article
-  const { data: article, error } = await supabase
-    .from("articles")
-    .select("*")
-    .eq("id", articleId)
-    .single();
-
-  if (error || !article) {
-    return c.text("Article not found", 404);
-  }
-
-  // Fetch newer article (created after this one)
-  const { data: newerArticle } = await supabase
-    .from("articles")
-    .select("id")
-    .gt("created_at", article.created_at)
-    .order("created_at", { ascending: true })
-    .limit(1)
-    .single();
-
-  // Fetch older article (created before this one)
-  const { data: olderArticle } = await supabase
-    .from("articles")
-    .select("id")
-    .lt("created_at", article.created_at)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  const html = await eta.renderFile("article.html", {
-    article,
-    newerArticle,
-    olderArticle,
-  });
-
-  return c.html(html);
-}*/
-
 export async function displayAllArticles(c) {
   const page = Number(c.req.query("page")) || 1; // Default to page 1
   const limit = Number(c.req.query("limit")) || 5; // Default 5 articles per page
@@ -123,9 +83,14 @@ export async function displayAllArticles(c) {
     .select("*", { count: "exact", head: true });
 
   const totalPages = Math.ceil(count / limit);
+	
+	const sanitizedArticles = articles.map(article => ({
+		...article,
+		content: DOMPurify.sanitize(marked.parse(article.content))
+	}));
 
   const html = await eta.renderFile("index.html", {
-    articles,
+    articles: sanitizedArticles,
     currentPage: page,
     nextPage: page < totalPages ? page + 1 : null,
     prevPage: page > 1 ? page - 1 : null
@@ -134,35 +99,11 @@ export async function displayAllArticles(c) {
   return c.html(html);
 }
 
-/*export async function postArticle(c){
-  const body = await c.req.parseBody();
-  const { title, content, images } = body;
-
-  if (!title || !content) {
-    return c.text("Title and content are required!", 400);
-  }
-
-  // Convert images from comma-separated string to array
-  const imageArray = images ? (images as string).split(",") : [];
-
-  // Insert into Supabase
-  const { data, error } = await supabase
-    .from("articles")
-    .insert([{ title, content, images: imageArray }]);
-
-  if (error) {
-    console.error(error);
-    return c.text("Failed to save article", 500);
-  }
-
-  // Redirect to success page
-  return c.redirect("/");
-}*/
-
 export async function postArticle(c) {
   const formData = await c.req.formData();
   const title = formData.get("title") as string;
-  const content = formData.get("content") as string;
+  //const content = formData.get("content") as string;
+	const content = DOMPurify.sanitize(formData.get("content") as string);
   const images = formData.getAll("images") as File[]; // Get all uploaded files
 
   // Validate required fields
