@@ -1,30 +1,20 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem("jwt_token");
+  try {
+    // Check if user is already logged in
+    const response = await fetch("/login", {
+      method: "GET",
+      credentials: "include", // Include cookies for authentication
+    });
 
-  if (token) {
-    try {
-      const response = await fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.loggedIn) {
-        window.location.href = "/admin";
-        return;
-      } else {
-        localStorage.removeItem("jwt_token");
-      }
-    } catch (error) {
-      console.error("Token validation error:", error);
+    if (response.redirected) {
+      window.location.href = response.url; // Redirect if the server does
+      return;
     }
+  } catch (error) {
+    console.error("Error checking authentication:", error);
   }
 
-  // Attach event listener only if not redirected
+  // Attach login event listener only if not redirected
   document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -37,12 +27,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
+        credentials: "include", // Ensure cookies are sent
       });
+
+      if (response.redirected) {
+        window.location.href = response.url; // Redirect if the server does
+        return;
+      }
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("jwt_token", data.token);
         document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
         setTimeout(() => {
           window.location.href = "/admin";

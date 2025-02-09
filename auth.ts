@@ -49,9 +49,12 @@ export async function authLogin(c) {
     try {
       const key = await importKey(["verify"]);
       const payload = await verify(token, key);
-      return c.json({ loggedIn: true, user: payload });
+      
+      // Redirect authenticated users to /admin
+      return c.redirect("/admin");
     } catch {
-      return c.json({ loggedIn: false, error: "Invalid or expired token" }, 401);
+      // If token is invalid or expired, show login page
+      return c.redirect("/login");
     }
   }
 
@@ -74,9 +77,12 @@ export async function authLogin(c) {
       key
     );
 
+    // Set the JWT as a cookie
     c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
-    return c.json({ message: "Login successful", token });
+
+    // Redirect to /admin after successful login
+    return c.redirect("/admin");
   }
 
-  return c.json({ error: "Invalid credentials" }, 401);
+  return c.redirect("/login");
 }
