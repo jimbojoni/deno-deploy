@@ -9,7 +9,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 		});
 
 		if (response.ok) {
-			// Redirect to the login page after successful logout
+			localStorage.removeItem("jwt_token");
 			window.location.href = "/";
 		} else {
 			console.error("Logout failed");
