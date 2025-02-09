@@ -15,6 +15,7 @@ const app = new Hono();
 
 // Login Route (Generates JWT Token)
 app.post("/login", authLogin);
+app.get("/login", authLogin);
 
 app.post("/logout", (c) => {
 	// Clear the JWT cookie by setting it to expire immediately
@@ -23,10 +24,10 @@ app.post("/logout", (c) => {
 });
 
 // Public Routes
-app.get("/login", async (c) => {
+/*app.get("/login", async (c) => {
   const html = await eta.renderFile("login.html", {});
   return c.html(html);
-});
+});*/
 
 app.get("/", displayAllArticles);
 
