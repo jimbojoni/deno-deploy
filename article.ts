@@ -89,7 +89,7 @@ export async function displayAllArticles(c) {
 	
 	const sanitizedArticles = articles.map(article => ({
 		...article,
-		content: ammonia.clean(marked.parse(article.content))
+		content: article.content)
 	}));
 
   const html = await eta.renderFile("index.html", {
