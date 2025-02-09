@@ -33,7 +33,7 @@
 									<h2>
 										<a href="/article/<%= article.id %>"><%= article.title %></a>
 									</h2>
-									<p><%= new Date(it.article.created_at).toLocaleDateString() %></p>
+									<p><%= new Date(article.created_at).toLocaleDateString() %></p>
 								</div>
 								<p>
 									<% if (article.content.length > 100) { %>
