@@ -212,35 +212,13 @@
 }
 
 .article-meta {
-  background: #f8f9fa;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: 0.9em;
-  color: #555;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+	
 }
 
-.article-meta p {
-  margin: 5px 0;
+.upper-meta {
+	
 }
 
-.article-meta strong {
-  color: #333;
-}
-
-.tag {
-  display: inline-block;
-  background: #007bff;
-  color: white;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.85em;
-  margin-right: 5px;
-}
-
-.tag:hover {
-  background: #0056b3;
+.lower-meta {
+	
 }

@@ -20,16 +20,20 @@
 		<div class="article">
 			<h1><%= it.article.title %></h1>
 			<div class="article-meta">
-				<p><strong>Author:</strong> <%= it.article.author || 'Anonymous' %></p>
-				<p><strong>Published:</strong> <%= new Date(it.article.created_at).toLocaleDateString() %></p>
-				<p><strong>Category:</strong> <%= it.article.category || 'Uncategorized' %></p>
-				<% if (it.article.tags && it.article.tags.length > 0) { %>
-					<p><strong>Tags:</strong> 
-						<% it.article.tags.forEach(tag => { %>
-							<span class="tag"><%= tag %></span>
-						<% }) %>
-					</p>
-				<% } %>
+				<div class="upper-meta">
+					<p><strong>Author:</strong> <%= it.article.author || 'Anonymous' %></p>
+					<p><strong>Published:</strong> <%= new Date(it.article.created_at).toLocaleDateString() %></p>
+					<p><strong>Category:</strong> <%= it.article.category || 'Uncategorized' %></p>
+				</div>
+				<div class="lower-meta">
+					<% if (it.article.tags && it.article.tags.length > 0) { %>
+						<p><strong>Tags:</strong> 
+							<% it.article.tags.forEach(tag => { %>
+								<span class="tag"><%= tag %></span>
+							<% }) %>
+						</p>
+					<% } %>
+				</div>
 			</div>
 			<p>
 				<% if (it.article.images && it.article.images.length > 0) { %>
