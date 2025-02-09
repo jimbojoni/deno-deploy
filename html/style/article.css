@@ -225,7 +225,8 @@
 }
 
 .upper-meta {
-	
+	display: flex;
+	gap: 16px;
 }
 
 .lower-meta {
