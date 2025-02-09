@@ -13,6 +13,7 @@ const UPLOAD_PRESET = "deno-deploy";
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
 eta.configure({ views: "./html" });
+await ammonia.init();
 
 export async function displayArticle(c) {
   const articleId = c.req.param("article_id");
