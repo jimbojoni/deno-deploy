@@ -18,7 +18,7 @@ ul {
 .article h2 {
 	font-size: 18px;
 	font-weight: bold;
-	margin-bottom: 8px;
+	margin: 0px;
 }
 .article h2 a {
 	text-decoration: none;
@@ -29,7 +29,7 @@ ul {
 }
 .article p {
 	color: #374151;
-	margin: 5px;
+	margin: 5px 0px;
 }
 
 .article-content {
