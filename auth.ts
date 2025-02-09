@@ -55,7 +55,7 @@ export async function authLogin(c) {
     }
 
     // Render login page instead of redirecting again
-    return c.html(await Deno.readTextFile("./public/login.html"));
+    return c.html(await Deno.readTextFile("./html/login.html"));
   }
 
   // Handle POST (Login attempt)
