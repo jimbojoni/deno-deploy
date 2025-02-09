@@ -25,12 +25,22 @@
 			<form action="/create-article" method="post" enctype="multipart/form-data">
 				<label>Title:</label>
 				<input type="text" name="title" required><br><br>
-
+				
+				<label>Category:</label>
+				<input type="text" name="category" list="category-list" placeholder="Default Category: Umum">
+				<datalist id="category-list">
+					<% categories.forEach(category => { %>
+						<option value="<%= category.category %>">
+					<% }) %>
+				</datalist>
+				<br><br>
+				
 				<label>Content:</label>
 				<div id="editor"></div>
 				<textarea name="content" id="content-input" hidden></textarea>
 				<br><br>
-
+				<label>Tags (Comma separated):</label>
+				<input type="text" name="tags" placeholder="Tag, Tag, Tag, ...etc."><br><br>
 				<!-- Updated file input for multiple images -->
 				<label>Upload Images (max 5):</label>
 				<input 

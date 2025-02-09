@@ -127,8 +127,22 @@ export async function postArticle(c) {
   const content = ammonia.clean(formData.get("content") as string);
   //const images = formData.getAll("images") as File[]; // Get all uploaded files
 	const imagesRaw = formData.getAll("images");
-	const category = "";
-	const tags = [];
+	const inputCategory = formData.get("category") as string | null;
+	const category = inputCategory && inputCategory.trim() !== "" ? inputCategory : "Umum";
+	const tagsInput = formData.get("tags") as string | null;
+
+	// Validate category (required field)
+	if (!category) {
+		return c.text("Category is required!", 400);
+	}
+
+	// Process tags (optional field)
+	const tags = tagsInput
+		? tagsInput
+				.split(",")
+				.map(tag => tag.trim())
+				.filter(tag => tag.length > 0) // Remove empty tags
+		: []; // Default to empty array if no tags are provided
 
   // Validate required fields
   if (!title || !content) {
@@ -197,6 +211,21 @@ export async function postArticle(c) {
     console.error("Image upload failed:", error);
     return c.text("Failed to upload one or more images", 500);
   }
+}
+
+export async function renderCreateArticle (c) {
+  const { data: categories, error } = await supabase
+    .from("article_category")
+    .select("category");
+
+  if (error) {
+    console.error("Error fetching categories:", error);
+    return c.text("Failed to load categories", 500);
+  }
+
+  const html = await eta.renderFile("create-article.html", { categories });
+
+  return c.html(html);
 }
 
 async function importKey(usages: KeyUsage[]): Promise<CryptoKey> {
