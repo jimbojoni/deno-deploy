@@ -50,11 +50,12 @@ export async function authLogin(c) {
         await verify(jwt, key);
         return c.redirect("/admin"); // If valid, redirect to admin
       } catch {
-        return c.redirect("/login"); // Invalid token, show login page
+        // Token invalid/expired → Fall through to render login page
       }
     }
 
-    return c.redirect("/login"); // No token, show login page
+    // Render login page instead of redirecting again
+    return c.html(await Deno.readTextFile("./public/login.html"));
   }
 
   // Handle POST (Login attempt)
@@ -82,5 +83,5 @@ export async function authLogin(c) {
     return c.redirect("/admin"); // Redirect after successful login
   }
 
-  return c.redirect("/login"); // Invalid credentials
+  return c.html(await Deno.readTextFile("./public/login.html")); // Show login page on failed login
 }
