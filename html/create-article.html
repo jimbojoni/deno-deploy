@@ -29,7 +29,7 @@
 				<label>Category:</label>
 				<input type="text" name="category" list="category-list" placeholder="Default Category: Umum">
 				<datalist id="category-list">
-					<% categories.forEach(category => { %>
+					<% it.categories.forEach(category => { %>
 						<option value="<%= category.category %>">
 					<% }) %>
 				</datalist>
