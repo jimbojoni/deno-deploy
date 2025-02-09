@@ -105,11 +105,12 @@ export async function displayAllArticles(c) {
 
 export async function postArticle(c) {
   // Attempt to retrieve the JWT from cookies
-	const jwtToken = getCookie(c, "jwt"); // <-- Correct usage
+	const jwtToken = getCookie(c, "jwt");
   let author = "anonymous";
 
   if (jwtToken) {
     try {
+      // Use the imported key function
       const key = await importKey(["verify"]);
       const payload = await verify(jwtToken, key);
       author = payload.name || payload.user || "anonymous";
@@ -195,4 +196,19 @@ export async function postArticle(c) {
     console.error("Image upload failed:", error);
     return c.text("Failed to upload one or more images", 500);
   }
+}
+
+async function importKey(usages: KeyUsage[]): Promise<CryptoKey> {
+  // Get secret from environment variables
+  const secret = Deno.env.get("SECRET_KEY");
+  if (!secret) throw new Error("SECRET_KEY environment variable not set");
+
+  // For HMAC-SHA256 JWT (common use case)
+  return await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    usages
+  );
 }
