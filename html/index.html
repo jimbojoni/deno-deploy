@@ -29,9 +29,12 @@
 								<img src="<%= article.images[0] %>" alt="Article Image" class="thumbnail">
 							<% } %>
 							<div>
-								<h2>
-									<a href="/article/<%= article.id %>"><%= article.title %></a>
-								</h2>
+								<div class="article-title">
+									<h2>
+										<a href="/article/<%= article.id %>"><%= article.title %></a>
+									</h2>
+									<p><%= new Date(it.article.created_at).toLocaleDateString() %></p>
+								</div>
 								<p>
 									<% if (article.content.length > 100) { %>
 										<%= article.content.substring(0, 100) %>...

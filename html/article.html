@@ -21,9 +21,9 @@
 			<h1><%= it.article.title %></h1>
 			<div class="article-meta">
 				<div class="upper-meta">
-					<p><strong>Author:</strong> <%= it.article.author || 'Anonymous' %></p>
-					<p><strong>Published:</strong> <%= new Date(it.article.created_at).toLocaleDateString() %></p>
-					<p><strong>Category:</strong> <%= it.article.category || 'Uncategorized' %></p>
+					<p><strong>Penulis:</strong> <%= it.article.author || 'Anonymous' %></p>
+					<p><strong>Tanggal:</strong> <%= new Date(it.article.created_at).toLocaleDateString() %></p>
+					<p><strong>Kategori:</strong> <%= it.article.category || 'Uncategorized' %></p>
 				</div>
 				<div class="lower-meta">
 					<% if (it.article.tags && it.article.tags.length > 0) { %>
