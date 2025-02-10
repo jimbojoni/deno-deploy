@@ -1,4 +1,4 @@
-/*document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Attach login event listener only if not redirected
   document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -27,9 +27,9 @@
       console.error("Login error:", error);
     }
   });
-});*/
+});
 
-document.getElementById("login-form").addEventListener("submit", async (e) => {
+/*document.getElementById("login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const email = document.getElementById("email").value;
@@ -55,3 +55,4 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     document.getElementById("message").innerText = "❌ An error occurred. Please try again.";
   }
 });
+*/

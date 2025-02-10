@@ -3,9 +3,9 @@ import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 //import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+//const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+//const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+//const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 eta.configure({ views: "./html" });
 
@@ -47,7 +47,7 @@ export async function authMiddleware(c: any, next: any) {
 	}
 }
 
-/*export async function authLogin(c) {
+export async function authLogin(c) {
   if (c.req.method === "GET") {
     // Check if user is already logged in (JWT in cookies)
     const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
@@ -93,9 +93,9 @@ export async function authMiddleware(c: any, next: any) {
   }
 
   return c.redirect("/login"); // Show login page on failed login
-}*/
+}
 
-export async function authLogin(c) {
+/*export async function authLogin(c) {
   if (c.req.method === "GET") {
     const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
 
@@ -133,3 +133,4 @@ export async function authLogin(c) {
 
   return c.redirect("/admin"); // Redirect on success
 }
+*/
