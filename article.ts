@@ -107,7 +107,7 @@ export async function displayAllArticles(c) {
 export async function postArticle(c) {
   // Attempt to retrieve the JWT from cookies
 	const jwtToken = getCookie(c, "jwt");
-  let author = "anonymous";
+  let author, author_id;
 
   if (jwtToken) {
     try {
@@ -115,6 +115,7 @@ export async function postArticle(c) {
       const key = await importKey(["verify"]);
       const payload = await verify(jwtToken, key);
       author = payload.name || payload.user || "Anonymous";
+			author_id = payload.id || null;
     } catch (error) {
       console.error("JWT verification failed:", error);
     }
@@ -125,7 +126,6 @@ export async function postArticle(c) {
   const title = formData.get("title") as string;
   // Sanitize the markdown content before storing it
   const content = ammonia.clean(formData.get("content") as string);
-  //const images = formData.getAll("images") as File[]; // Get all uploaded files
 	const imagesRaw = formData.getAll("images");
 	const inputCategory = formData.get("category") as string | null;
 	const category = inputCategory && inputCategory.trim() !== "" ? inputCategory : "Umum";
@@ -196,7 +196,8 @@ export async function postArticle(c) {
         title, 
         content, 
         images: imagesUrls,
-        author, // Will be either the verified user name or "anonymous"
+        author,
+				author_id,
 				category,
 				tags,
       }]);

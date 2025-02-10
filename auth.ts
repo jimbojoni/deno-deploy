@@ -1,6 +1,11 @@
 import { create, getNumericDate, verify } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 //import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 eta.configure({ views: "./html" });
 
@@ -42,7 +47,7 @@ export async function authMiddleware(c: any, next: any) {
 	}
 }
 
-export async function authLogin(c) {
+/*export async function authLogin(c) {
   if (c.req.method === "GET") {
     // Check if user is already logged in (JWT in cookies)
     const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
@@ -88,4 +93,43 @@ export async function authLogin(c) {
   }
 
   return c.redirect("/login"); // Show login page on failed login
+}*/
+
+export async function authLogin(c) {
+  if (c.req.method === "GET") {
+    const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
+
+    if (jwt) {
+      try {
+        const { data, error } = await supabase.auth.getUser(jwt);
+        if (data?.user) return c.redirect("/admin"); // If valid, go to admin
+      } catch {
+        // Invalid/expired token → show login page
+      }
+    }
+
+    const html = await eta.renderFile("login.html", {});
+    return c.html(html);
+  }
+
+  // Handle POST (Login attempt)
+  const { email, password } = await c.req.json();
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) return c.json({ error: "Invalid credentials" }, 401);
+
+  // Get user's role from profiles table
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (profileError || !profile) return c.json({ error: "Profile not found" }, 403);
+
+  // Set JWT as a cookie
+  c.header("Set-Cookie", `jwt=${data.session.access_token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
+
+  return c.redirect("/admin"); // Redirect on success
 }
