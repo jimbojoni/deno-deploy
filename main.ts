@@ -4,7 +4,7 @@ import { encode } from "https://deno.land/std@0.224.0/encoding/base64url.ts";
 import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_export.ts";
 import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders, } from "./google_utils.ts";
 import { authMiddleware, authLogin, } from "./auth.ts";
-import { displayArticle, postArticle, displayAllArticles, renderCreateArticle } from "./article.ts";
+import { displayArticle, postArticle, displayAllArticles, renderEditArticle } from "./article.ts";
 import { serveStatic } from "https://deno.land/x/hono/middleware.ts";
 
 // Trigger new Deployment
@@ -97,8 +97,8 @@ app.get("/manage-article", async (c) => {
   return c.html(html);
 });
 app.get("/article/:article_id", displayArticle);
-app.get("/create-article", renderCreateArticle);
-app.post("/create-article", postArticle);
+app.get("/edit-article", renderEditArticle);
+app.post("/edit-article", postArticle);
 
 // Serve JS files
 app.use("/js/*", serveStatic({

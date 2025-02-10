@@ -213,7 +213,7 @@ export async function postArticle(c) {
   }
 }
 
-export async function renderCreateArticle (c) {
+export async function renderEditArticle (c) {
   const { data: categories, error } = await supabase
     .from("article_category")
     .select("category");
@@ -223,7 +223,7 @@ export async function renderCreateArticle (c) {
     return c.text("Failed to load categories", 500);
   }
 
-  const html = await eta.renderFile("create-article.html", { categories });
+  const html = await eta.renderFile("edit-article.html", { categories });
 
   return c.html(html);
 }
