@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  try {
+  /*try {
     // Check if user is already logged in
     const response = await fetch("/login", {
       method: "GET",
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (error) {
     console.error("Error checking authentication:", error);
-  }
+  }*/
 
   // Attach login event listener only if not redirected
   document.getElementById("login-form").addEventListener("submit", async (e) => {
@@ -37,14 +37,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const data = await response.json();
 
-      if (response.ok) {
+      /*if (response.ok) {
         document.getElementById("message").innerText = "✅ Login successful! Redirecting...";
         setTimeout(() => {
           window.location.href = "/admin";
         }, 1000);
       } else {
         document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
-      }
+      }*/
     } catch (error) {
       document.getElementById("message").innerText = "❌ An error occurred. Please try again.";
       console.error("Login error:", error);

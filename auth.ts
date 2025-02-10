@@ -1,5 +1,8 @@
 import { create, getNumericDate, verify } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
+import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 //import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
+
+eta.configure({ views: "./html" });
 
 const SECRET_KEY = Deno.env.get("SECRET_KEY") || "";
 if (SECRET_KEY.length < 32) {
@@ -55,7 +58,7 @@ export async function authLogin(c) {
     }
 
     // Render login page instead of redirecting again
-    return c.html(await Deno.readTextFile("./html/login.html"));
+   return c.redirect("/login");
   }
 
   // Handle POST (Login attempt)
@@ -83,5 +86,5 @@ export async function authLogin(c) {
     return c.redirect("/admin"); // Redirect after successful login
   }
 
-  return c.html(await Deno.readTextFile("./public/login.html")); // Show login page on failed login
+  return c.redirect("/login"); // Show login page on failed login
 }
