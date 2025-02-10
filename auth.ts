@@ -58,7 +58,7 @@ export async function authLogin(c) {
     }
 
     // Render login page instead of redirecting again
-   return c.redirect("/login");
+   return (await eta.renderFile("admin.html", {}));
   }
 
   // Handle POST (Login attempt)
