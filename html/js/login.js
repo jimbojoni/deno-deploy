@@ -14,7 +14,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify({ username, password }),
         credentials: "include", // Ensure cookies are sent
       });
-
+			
+			if (response.redirected) {
+        window.location.href = response.url; // Follow the redirect
+        return;
+      }
+			
       const data = await response.json();
 
     } catch (error) {
