@@ -58,7 +58,8 @@ export async function authLogin(c) {
     }
 
     // Render login page instead of redirecting again
-   return (await eta.renderFile("admin.html", {}));
+		const html = await eta.renderFile("login.html", {});
+		return c.html(html);
   }
 
   // Handle POST (Login attempt)
