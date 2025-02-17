@@ -40,7 +40,7 @@ export async function authMiddleware(c: any, next: any) {
 
 	try {
 		const payload = await verifyJwt(token);
-		c.set("user", payload.user); // Set only the `user`
+		c.set("user", payload); // Set only the `user`
 		await next();
 	} catch {
 		return c.json({ error: "Invalid token" }, 401);
