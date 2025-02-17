@@ -3,7 +3,7 @@ import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { encode } from "https://deno.land/std@0.224.0/encoding/base64url.ts";
 import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_export.ts";
 import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders, } from "./google_utils.ts";
-import { authMiddleware, authLogin, } from "./auth.ts";
+import { authMiddleware, authLogin, role } from "./auth.ts";
 import { displayArticle, postArticle, displayAllArticles, renderEditArticle } from "./article.ts";
 import { serveStatic } from "https://deno.land/x/hono/middleware.ts";
 
@@ -32,7 +32,7 @@ app.post("/logout", (c) => {
 app.get("/", displayAllArticles);
 
 // Apply authentication to all /db and /drive routes
-app.use("/admin/*", authMiddleware);
+app.use("/admin/*", authMiddleware, role("admin"));
 
 app.get("/admin", async (c) => {
   const html = await eta.renderFile("admin.html", {});

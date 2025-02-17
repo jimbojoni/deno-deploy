@@ -95,6 +95,14 @@ export async function authLogin(c) {
 	return c.redirect("/admin");
 }
 
+export const role = (requiredRole) => async (c, next) => {
+  const user = c.get("user");
+  if (!user || user.role !== requiredRole) {
+    return c.json({ success: false, error: "Forbidden" }, 403);
+  }
+  await next();
+};
+
 /*export async function authLogin(c) {
   if (c.req.method === "GET") {
     const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
