@@ -1,6 +1,6 @@
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { marked } from "https://esm.sh/marked";
+import { marked } from "https://esm.sh/marked@15.0.7";
 //import DOMPurify from "https://esm.sh/dompurify@3.0.8";
 import * as ammonia from "https://deno.land/x/ammonia@0.3.1/mod.ts"
 import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";

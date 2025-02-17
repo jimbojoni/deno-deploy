@@ -1,2 +1,3 @@
 backups/
 .env_prod
+main.ts.check_env
