@@ -14,7 +14,8 @@ const app = new Hono();
 
 app.get('/', (c) => {
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-  const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+  const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+	const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const SECRET_KEY = Deno.env.get("SECRET_KEY");
   const credentialsBase64 = Deno.env.get("GOOGLE_API_SIMOOL");
 
