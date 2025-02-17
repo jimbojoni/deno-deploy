@@ -28,7 +28,8 @@ app.get('/', (c) => {
         <h1>Environment Variables</h1>
         <ul>
           <li><strong>SUPABASE_URL:</strong> ${SUPABASE_URL}</li>
-          <li><strong>SUPABASE_ANON_KEY:</strong> ${SUPABASE_KEY}</li>
+          <li><strong>SUPABASE_ANON_KEY:</strong> ${SUPABASE_ANON_KEY}</li>
+          <li><strong>SUPABASE_SERVICE_ROLE_KEY:</strong> ${SUPABASE_SERVICE_ROLE_KEY}</li>
           <li><strong>SECRET_KEY:</strong> ${SECRET_KEY}</li>
           <li><strong>GOOGLE_API_SIMOOL:</strong> ${credentialsBase64}</li>
         </ul>
