@@ -3,9 +3,9 @@ import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 //import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
 
-//const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-//const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-//const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 eta.configure({ views: "./html" });
 
@@ -71,28 +71,28 @@ export async function authLogin(c) {
   const { username, password } = await c.req.json();
   if (!SECRET_KEY) return c.json({ error: "Server misconfiguration" }, 500);
 
-  const users = [
-    { username: "admin", password: "My*Admin*Password*000", name: "Just Admin", role: "administrator" },
-    { username: "writer", password: "My*Writer*Password*001", name: "Adam Writer", role: "content-creator" },
-  ];
+	const { data: user, error } = await supabase
+		.from("profiles")
+		.select("nik, kk, role")
+		.eq("nik", username)
+		.eq("password", password)  // Plain text comparison (only for testing)
+		.single();
 
-  const user = users.find((u) => u.username === username && u.password === password);
+	if (error || !user) {
+		return c.redirect("/login");
+	}
 
-  if (user) {
-    const key = await importKey(["sign"]);
-    const token = await create(
-      { alg: "HS256", typ: "JWT" },
-      { user: user.username, name: user.name, role: user.role, exp: getNumericDate(3600) },
-      key
-    );
+  const key = await importKey(["sign"]);
+	const token = await create(
+		{ alg: "HS256", typ: "JWT" },
+		{ user: user.nik, name: user.kk, role: user.role, exp: getNumericDate(3600) },
+		key
+	);
 
-    // Set the JWT as a cookie
-    c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
+	// Set JWT as a cookie
+	c.header("Set-Cookie", `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
 
-    return c.redirect("/admin"); // Redirect after successful login
-  }
-
-  return c.redirect("/login"); // Show login page on failed login
+	return c.redirect("/admin");
 }
 
 /*export async function authLogin(c) {
