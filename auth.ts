@@ -30,7 +30,7 @@ async function verifyJwt(token: string) {
 	return await verify(token, key);
 }
 
-export const authMiddleware = async (c: any, next: any) {
+export const authMiddleware = async (c: any, next: any) => {
 	let token = c.req.header("Authorization")?.split(" ")[1] ||
 		c.req.header("Cookie")?.split(";").find(c => c.trim().startsWith("jwt="))?.split("=")[1];
 
