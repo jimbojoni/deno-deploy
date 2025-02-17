@@ -1,8 +1,9 @@
 import { google } from "https://esm.sh/googleapis@122.0.0";
 const { drive } = await googleAuth();
+import * as envVar from "./env.ts";
 
 export async function googleAuth() {
-  const credentialsBase64 = Deno.env.get("GOOGLE_API_SIMOOL");
+  const credentialsBase64 = Deno.env.get("GOOGLE_API_SIMOOL") || envVar.GOOGLE_API_SIMOOL;
 
   if (!credentialsBase64) {
     console.error("❌ Error: GOOGLE_API environment variable is not set.");
@@ -154,6 +155,10 @@ export async function deleteFile(fileId: string) {
   } catch (error) {
     if (error.code === 403) {
       console.error(`❌ Insufficient permissions to delete file with ID: ${fileId}`);
+    } else if (error.code === 404) {
+      console.warn(`⚠️ File with ID: ${fileId} not found. It might have already been deleted.`);
+      // Optionally consider this a success if deletion is idempotent
+      return true;
     } else {
       console.error(`❌ Failed to delete file with ID: ${fileId}`, error);
     }

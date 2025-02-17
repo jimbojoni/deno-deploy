@@ -5,9 +5,10 @@ import { marked } from "https://esm.sh/marked@15.0.7";
 import * as ammonia from "https://deno.land/x/ammonia@0.3.1/mod.ts"
 import { getCookie } from "https://deno.land/x/hono@v4.3.11/helper.ts";
 import { verify } from "https://deno.land/x/djwt@v2.8/mod.ts";
+import * as envVar from "./env.ts";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || envVar.SUPABASE_URL;
+const SUPABASE_KEY = Deno.env.get("SUPABASE_ANON_KEY") || envVar.SUPABASE_ANON_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CLOUD_NAME = "dlcgyiaqo";

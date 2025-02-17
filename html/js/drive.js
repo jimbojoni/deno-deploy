@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		try {
 			const response = await fetch(`/admin/drive/delete/${fileId}`, { method: "DELETE" });
 			if (!response.ok) throw new Error("Failed to delete file.");
-			alet("File deleted successfully!");
+			alert("File deleted successfully!");
 			loadFiles(); // Reload file list
 		} catch (error) {
 			alert(`Error: ${error.message}`);
