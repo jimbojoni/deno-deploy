@@ -30,7 +30,7 @@ async function verifyJwt(token: string) {
 	return await verify(token, key);
 }
 
-export async function authMiddleware(c: any, next: any) {
+export const authMiddleware = async (c: any, next: any) {
 	let token = c.req.header("Authorization")?.split(" ")[1] ||
 		c.req.header("Cookie")?.split(";").find(c => c.trim().startsWith("jwt="))?.split("=")[1];
 
@@ -95,50 +95,10 @@ export async function authLogin(c) {
 	return c.redirect("/admin");
 }
 
-export const role = (requiredRole) => async (c, next) => {
+export const role = (...allowedRoles) => async (c, next) => {
   const user = c.get("user");
-  if (!user || user.role !== requiredRole) {
+  if (!user || !allowedRoles.includes(user.role)) {
     return c.json({ success: false, error: "Forbidden" }, 403);
   }
   await next();
 };
-
-/*export async function authLogin(c) {
-  if (c.req.method === "GET") {
-    const jwt = c.req.header("Cookie")?.match(/jwt=([^;]+)/)?.[1];
-
-    if (jwt) {
-      try {
-        const { data, error } = await supabase.auth.getUser(jwt);
-        if (data?.user) return c.redirect("/admin"); // If valid, go to admin
-      } catch {
-        // Invalid/expired token → show login page
-      }
-    }
-
-    const html = await eta.renderFile("login.html", {});
-    return c.html(html);
-  }
-
-  // Handle POST (Login attempt)
-  const { email, password } = await c.req.json();
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) return c.json({ error: "Invalid credentials" }, 401);
-
-  // Get user's role from profiles table
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", data.user.id)
-    .single();
-
-  if (profileError || !profile) return c.json({ error: "Profile not found" }, 403);
-
-  // Set JWT as a cookie
-  c.header("Set-Cookie", `jwt=${data.session.access_token}; HttpOnly; Secure; SameSite=Strict; Path=/`);
-
-  return c.redirect("/admin"); // Redirect on success
-}
-*/
