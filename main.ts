@@ -2,16 +2,12 @@ import { Hono } from "https://deno.land/x/hono@v4.3.11/mod.ts";
 import * as eta from "https://deno.land/x/eta@v2.0.0/mod.ts";
 import { encode } from "https://deno.land/std@0.224.0/encoding/base64url.ts";
 import * as db from "./db_import_export.ts";
-//import { importSupabaseData, clearDenoKv, getDatabaseSize, } from "./db_import_export.ts";
 import * as google from "./google_utils.ts";
-//import { backupDenoKvToDrive, listAllFiles, deleteFile, deleteAllFilesAndFolders, } from "./google_utils.ts";
 import * as auth from "./auth.ts";
-//import { authMiddleware, authLogin, role , logout } from "./auth.ts";
 import * as article from "./article.ts";
-//import { displayArticle, postArticle, displayAllArticles, renderEditArticle } from "./article.ts";
 import { serveStatic } from "https://deno.land/x/hono@v4.3.11/middleware.ts";
 
-// Trigger new Deployment
+// Trigger new Deployment Yes
 
 // Set up Eta (templating engine)
 eta.configure({ views: "./html" });
